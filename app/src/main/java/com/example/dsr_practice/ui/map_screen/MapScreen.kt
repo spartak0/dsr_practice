@@ -29,6 +29,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.dsr_practice.R
 import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
+import com.example.dsr_practice.utils.Constants
+import com.example.dsr_practice.utils.DefaultLatLng
+import com.example.dsr_practice.utils.isDefault
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.CameraPosition
@@ -46,14 +49,14 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Destination
 @Composable
 fun MapScreen(navigator: DestinationsNavigator) {
-    val moscow = LatLng(55.751244, 37.618423)
+    val moscow = LatLng(Constants.MOSCOW_LATITUDE, Constants.MOSCOW_LONGITUDE)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(moscow, 10f)
     }
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val markerState by remember { mutableStateOf(MarkerState(LatLng(0.0, 0.0))) }
+    val markerState by remember { mutableStateOf(MarkerState(DefaultLatLng.value)) }
 
     MapContent(
         searchText = text,
@@ -91,7 +94,7 @@ fun MapContent(
     onMapClick: (LatLng) -> Unit,
     onNextClick: () -> Unit,
 ) {
-    val markerVisibility = markerState.position != LatLng(0.0, 0.0)
+    val markerVisibility = !markerState.position.isDefault()
 
     Box(modifier = Modifier.fillMaxSize()) {
         SearchBar(
@@ -168,7 +171,7 @@ fun MapPermissions(onDismiss: () -> Unit) {
             onDismiss()
             Toast.makeText(
                 context,
-                "Turn on tracking.\nYou can do it in settings.",
+                context.getText(R.string.toast_turn_on_tracking),
                 Toast.LENGTH_SHORT
             ).show()
         }

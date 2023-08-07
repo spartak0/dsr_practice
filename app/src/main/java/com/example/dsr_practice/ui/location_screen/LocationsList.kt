@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.dsr_practice.ui.location_screen.view_pager.all_tab.WeatherItem
 
 @Composable
 fun LocationsList(modifier: Modifier = Modifier, itemOnClick: () -> Unit) {
@@ -18,7 +17,7 @@ fun LocationsList(modifier: Modifier = Modifier, itemOnClick: () -> Unit) {
     ) {
         //tmp impl
         items(20) {
-            WeatherItem(
+            WeatherListItem(
                 city = "Voronezh",
                 currentTemp = 15,
                 favoriteOnClick = {},

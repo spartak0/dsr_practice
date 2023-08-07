@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -52,7 +53,7 @@ fun BottomBar(
         ?: NavGraphs.bottomNavigation.startAppDestination
 
     BottomAppBar {
-        BottomBarScreenEnum.values().forEach { destination ->
+        BottomBarScreenModel.values().forEach { destination ->
             NavigationBarItem(
                 selected = currentDestination == destination.direction,
                 onClick = {
@@ -64,10 +65,10 @@ fun BottomBar(
                 },
                 icon = {
                     Icon(
-                        destination.icon, contentDescription = destination.label
+                        destination.icon, contentDescription = null
                     )
                 },
-                label = { Text(destination.label) },
+                label = { Text(stringResource(id = destination.label)) },
             )
         }
     }
