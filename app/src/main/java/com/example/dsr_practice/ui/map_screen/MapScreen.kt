@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.dsr_practice.R
+import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.CameraPosition
@@ -70,7 +71,7 @@ fun MapScreen(navigator: DestinationsNavigator) {
         onMapClick = { latLng ->
             markerState.position = latLng
         },
-        onNextNavigation = {}
+        onNextClick = { navigator.navigate(LocationNameScreenDestination) }
     )
 }
 
@@ -88,7 +89,7 @@ fun MapContent(
     currentLocationOnClick: () -> Unit,
     markerState: MarkerState,
     onMapClick: (LatLng) -> Unit,
-    onNextNavigation: () -> Unit,
+    onNextClick: () -> Unit,
 ) {
     val markerVisibility = markerState.position != LatLng(0.0, 0.0)
 
@@ -121,10 +122,10 @@ fun MapContent(
             ),
             onMapClick = onMapClick
         ) {
-                Marker(state = markerState, visible = markerVisibility, onClick = {
-                    markerState.position= LatLng(0.0,0.0)
-                    true
-                })
+            Marker(state = markerState, visible = markerVisibility, onClick = {
+                markerState.position = LatLng(0.0, 0.0)
+                true
+            })
 
         }
         FloatingActionButton(
@@ -144,7 +145,7 @@ fun MapContent(
                 .padding(16.dp)
         ) {
             FloatingActionButton(
-                onClick = onNextNavigation,
+                onClick = onNextClick,
             ) {
                 Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null)
             }
