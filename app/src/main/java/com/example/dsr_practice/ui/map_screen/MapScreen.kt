@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
 import com.example.dsr_practice.utils.Constants
 import com.example.dsr_practice.utils.DefaultLatLng
@@ -74,7 +75,16 @@ fun MapScreen(navigator: DestinationsNavigator) {
         onMapClick = { latLng ->
             markerState.position = latLng
         },
-        onNextClick = { navigator.navigate(LocationNameScreenDestination) }
+        onNextClick = {
+            navigator.navigate(
+                LocationNameScreenDestination(
+                    weatherData = Weather(
+                        lat = markerState.position.latitude,
+                        lon = markerState.position.latitude
+                    )
+                )
+            )
+        }
     )
 }
 

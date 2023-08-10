@@ -1,6 +1,7 @@
 package com.example.dsr_practice.ui.details_settings_screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -34,8 +36,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
-fun DetailsSettingsScreen(navigator: DestinationsNavigator) {
-    val options = RadioButtonOptions.values().map { it.description }.toList()
+fun DetailsSettingsScreen(navigator: DestinationsNavigator, weatherData: Weather) {
+    val options = RadioButtonOptions.values().toList()
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(options[0]) }
 
     DetailsSettingsScreenContent(
@@ -43,7 +45,12 @@ fun DetailsSettingsScreen(navigator: DestinationsNavigator) {
         options = options,
         selectedOption = selectedOption,
         onOptionSelected = onOptionSelected,
-        nextOnClick = {navigator.navigate(MainScreenDestination)}
+        nextOnClick = {
+            Log.d("AAA", "DetailsSettingsScreen: ${weatherData.copy(secondDayForecast = true)}")
+            navigator.navigate(
+                MainScreenDestination()
+            )
+        }
     )
 }
 
@@ -51,9 +58,9 @@ fun DetailsSettingsScreen(navigator: DestinationsNavigator) {
 @Composable
 fun DetailsSettingsScreenContent(
     backOnClick: () -> Unit,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
+    options: List<RadioButtonOptions>,
+    selectedOption: RadioButtonOptions,
+    onOptionSelected: (RadioButtonOptions) -> Unit,
     nextOnClick: () -> Unit,
 ) {
     Scaffold(topBar = { DetailsSettingsAppBar(backOnClick = backOnClick) }) {
@@ -95,31 +102,31 @@ fun DetailsSettingsScreenContent(
 
 @Composable
 fun RadioButtonGroup(
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit
+    options: List<RadioButtonOptions>,
+    selectedOption: RadioButtonOptions,
+    onOptionSelected: (RadioButtonOptions) -> Unit
 ) {
     Column {
-        options.forEach { text ->
+        options.forEach { option ->
             Row(
                 Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected = (text == selectedOption),
+                        selected = (option == selectedOption),
                         onClick = {
-                            onOptionSelected(text)
+                            onOptionSelected(option)
                         }
                     )
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = { onOptionSelected(text) }
+                    selected = (option == selectedOption),
+                    onClick = { onOptionSelected(option) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = text,
+                    text = option.description,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

@@ -26,16 +26,26 @@ import com.ramcosta.composedestinations.navigation.navigate
 @com.ramcosta.composedestinations.annotation.Destination
 fun MainScreen(externalNavController: NavController) {
     val navController = rememberNavController()
+    val bottomBarItems = listOf(
+        BottomBarScreenModel.LocationScreen,
+        BottomBarScreenModel.TriggersScreen,
+        BottomBarScreenModel.SettingsScreen
+    )
     MainScreenContent(
         navController = navController,
         externalNavController = externalNavController,
+        bottomBarItems = bottomBarItems,
     )
 }
 
 @Composable
-fun MainScreenContent(navController: NavHostController, externalNavController: NavController) {
+fun MainScreenContent(
+    navController: NavHostController,
+    externalNavController: NavController,
+    bottomBarItems: List<BottomBarScreenModel>
+) {
     Scaffold(
-        bottomBar = { BottomBar(navController = navController) },
+        bottomBar = { BottomBar(navController = navController, bottomBarItems = bottomBarItems) },
     ) { paddingValues ->
         BottomNavHost(
             navController = navController,
@@ -47,13 +57,14 @@ fun MainScreenContent(navController: NavHostController, externalNavController: N
 
 @Composable
 fun BottomBar(
-    navController: NavController
+    navController: NavController,
+    bottomBarItems: List<BottomBarScreenModel>
 ) {
     val currentDestination: Destination = navController.appCurrentDestinationAsState().value
         ?: NavGraphs.bottomNavigation.startAppDestination
 
     BottomAppBar {
-        BottomBarScreenModel.values().forEach { destination ->
+        bottomBarItems.forEach { destination ->
             NavigationBarItem(
                 selected = currentDestination == destination.direction,
                 onClick = {

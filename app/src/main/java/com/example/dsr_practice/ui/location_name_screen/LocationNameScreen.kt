@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.ui.destinations.DetailsSettingsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -28,13 +29,21 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun LocationNameScreen(navigator: DestinationsNavigator) {
+fun LocationNameScreen(navigator: DestinationsNavigator, weatherData: Weather) {
     var name by remember { mutableStateOf("") }
 
     LocationNameScreenContent(
         name = name,
         nameOnChange = { name = it },
-        nextOnClick = {navigator.navigate(DetailsSettingsScreenDestination)},
+        nextOnClick = {
+            navigator.navigate(
+                DetailsSettingsScreenDestination(
+                    weatherData = weatherData.copy(
+                        name = name
+                    )
+                )
+            )
+        },
         backOnClick = { navigator.navigateUp() })
 }
 

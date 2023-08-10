@@ -4,6 +4,8 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.dagger.hilt.android")
+    id ("kotlin-kapt")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -33,17 +35,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.4.6"
     }
     packaging {
         resources {
@@ -88,5 +90,16 @@ dependencies {
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.44")
-    ksp("com.google.dagger:hilt-compiler:2.44")
+    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    //coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
+    //room
+    implementation("androidx.room:room-runtime:2.5.2")
+    ksp("androidx.room:room-compiler:2.5.2")
+}
+kapt {
+    correctErrorTypes = true
 }

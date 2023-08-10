@@ -12,22 +12,24 @@ import com.example.dsr_practice.ui.destinations.SettingsScreenDestination
 import com.example.dsr_practice.ui.destinations.TriggersScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 
-enum class BottomBarScreenModel(
+sealed class BottomBarScreenModel(
     val direction: DirectionDestinationSpec,
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    LocationScreen(
+    object LocationScreen : BottomBarScreenModel(
         direction = LocationScreenDestination,
         label = R.string.location,
         icon = Icons.Default.LocationOn
-    ),
-    TriggersScreen(
+    )
+
+    object TriggersScreen : BottomBarScreenModel(
         direction = TriggersScreenDestination,
         label = R.string.triggers,
         icon = Icons.Default.Notifications
-    ),
-    SettingsScreen(
+    )
+
+    object SettingsScreen : BottomBarScreenModel(
         direction = SettingsScreenDestination,
         label = R.string.settings,
         icon = Icons.Default.Settings
