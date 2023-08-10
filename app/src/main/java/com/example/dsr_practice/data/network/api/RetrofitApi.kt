@@ -11,4 +11,9 @@ interface RetrofitApi {
         @Query("lat") lat: String?,
         @Query("lon") lon: String?
     ): Response<ForecastDto>
+
+    companion object {
+        const val BASE_URL = "https://api.openweathermap.org/"
+
+    }
 }

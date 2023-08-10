@@ -17,7 +17,7 @@ object DatabaseModule {
         Room.databaseBuilder(
             context,
             WeatherDatabase::class.java,
-            "weather_database"
+            WeatherDatabase.DATABASE_NAME
         ).fallbackToDestructiveMigration().build()
 
     @Provides
