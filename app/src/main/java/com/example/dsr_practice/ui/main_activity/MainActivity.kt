@@ -5,8 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.dsr_practice.ui.navigation.graphs.RootNavHost
 import com.example.dsr_practice.ui.theme.DsrPracticeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-@Suppress("INLINE_FROM_HIGHER_PLATFORM")
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
