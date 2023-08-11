@@ -9,7 +9,9 @@ data class Weather(
     val name: String = "",
     val lat: Double = 0.0,
     val lon: Double = 0.0,
-    val currentTemp: Double =0.0,
-    val isFavorite:Boolean = false,
-    val secondDayForecast:Boolean = false,
+    val currentTemp: Double = 0.0,
+    val condition: String = "",
+    val conditionIcon: String = "",
+    val isFavorite: Boolean = false,
+    val isSecondDayForecast: Boolean = false,
 ) : Parcelable

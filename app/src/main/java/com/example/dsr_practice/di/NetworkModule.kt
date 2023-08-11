@@ -18,6 +18,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     @Provides
+    @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient().newBuilder().addNetworkInterceptor { chain ->
             val request: Request.Builder = chain.request().newBuilder()

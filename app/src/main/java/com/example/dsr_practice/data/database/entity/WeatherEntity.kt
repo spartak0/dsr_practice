@@ -6,11 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "weather_table")
 data class WeatherEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID_COLUMN)
     val id: Int = 0,
     @ColumnInfo(name = NAME_COLUMN)
-    val name: String?,
+    val name: String = "",
     @ColumnInfo(name = LAN_COLUMN)
     val lat: Double = 0.0,
     @ColumnInfo(name = LON_COLUMN)

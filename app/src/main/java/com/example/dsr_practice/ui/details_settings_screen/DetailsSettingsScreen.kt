@@ -1,7 +1,6 @@
 package com.example.dsr_practice.ui.details_settings_screen
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
@@ -36,7 +36,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
-fun DetailsSettingsScreen(navigator: DestinationsNavigator, weatherData: Weather) {
+fun DetailsSettingsScreen(
+    navigator: DestinationsNavigator,
+    weatherData: Weather,
+    viewModel: DetailsSettingsViewModel = hiltViewModel()
+) {
     val options = RadioButtonOptions.values().toList()
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(options[0]) }
 
@@ -46,7 +50,13 @@ fun DetailsSettingsScreen(navigator: DestinationsNavigator, weatherData: Weather
         selectedOption = selectedOption,
         onOptionSelected = onOptionSelected,
         nextOnClick = {
-            Log.d("AAA", "DetailsSettingsScreen: ${weatherData.copy(secondDayForecast = true)}")
+            val newWeather = weatherData.copy(
+                isSecondDayForecast = when (selectedOption) {
+                    RadioButtonOptions.OneDay -> false
+                    RadioButtonOptions.TwoDay -> true
+                }
+            )
+            viewModel.addWeatherInDatabase(newWeather)
             navigator.navigate(
                 MainScreenDestination()
             )

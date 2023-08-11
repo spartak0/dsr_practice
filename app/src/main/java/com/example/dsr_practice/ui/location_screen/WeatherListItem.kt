@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +26,8 @@ import androidx.compose.ui.unit.sp
 fun WeatherListItem(
     city: String,
     currentTemp: Int,
-    favoriteOnClick: () -> Unit,
+    isFavorite: Boolean,
+    isFavoriteOnClick: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -48,9 +50,9 @@ fun WeatherListItem(
                     color = MaterialTheme.colorScheme.outline
                 )
             }
-            IconButton(onClick = favoriteOnClick) {
+            IconButton(onClick = isFavoriteOnClick) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = null
                 )
             }

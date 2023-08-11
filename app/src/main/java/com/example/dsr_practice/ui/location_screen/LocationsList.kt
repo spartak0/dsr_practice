@@ -4,24 +4,31 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.dsr_practice.domain.model.Weather
 
 @Composable
-fun LocationsList(modifier: Modifier = Modifier, itemOnClick: () -> Unit) {
+fun LocationsList(
+    list: List<Weather>,
+    modifier: Modifier = Modifier,
+    itemOnClick: () -> Unit,
+    isFavoriteOnClick: (Weather) -> Unit
+) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
         contentPadding = PaddingValues(top = 8.dp, bottom = 128.dp)
     ) {
-        //tmp impl
-        items(20) {
+        items(list) { weather ->
             WeatherListItem(
-                city = "Voronezh",
-                currentTemp = 15,
-                favoriteOnClick = {},
+                city = weather.name,
+                currentTemp = weather.currentTemp.toInt(),
+                isFavoriteOnClick = { isFavoriteOnClick(weather) },
                 onClick = itemOnClick,
+                isFavorite = weather.isFavorite,
                 modifier = Modifier
                     .fillMaxWidth()
             )
