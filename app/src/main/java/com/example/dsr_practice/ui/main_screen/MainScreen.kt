@@ -26,15 +26,11 @@ import com.ramcosta.composedestinations.navigation.navigate
 @com.ramcosta.composedestinations.annotation.Destination
 fun MainScreen(externalNavController: NavController) {
     val navController = rememberNavController()
-    val bottomBarItems = listOf(
-        BottomBarScreenModel.LocationScreen,
-        BottomBarScreenModel.TriggersScreen,
-        BottomBarScreenModel.SettingsScreen
-    )
+
     MainScreenContent(
         navController = navController,
         externalNavController = externalNavController,
-        bottomBarItems = bottomBarItems,
+        bottomBarItems = BottomBarScreenModel.bottomBarScreensList,
     )
 }
 

@@ -34,4 +34,12 @@ sealed class BottomBarScreenModel(
         label = R.string.settings,
         icon = Icons.Default.Settings
     )
+
+    companion object {
+        val bottomBarScreensList = listOf(
+            LocationScreen,
+            TriggersScreen,
+            SettingsScreen
+        )
+    }
 }

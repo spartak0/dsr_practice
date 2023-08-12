@@ -1,5 +1,6 @@
 package com.example.dsr_practice.ui.location_screen.view_pager.favorite_tab
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dsr_practice.domain.model.Weather
@@ -18,6 +19,9 @@ class FavoriteTabViewModel @Inject constructor(private val databaseRepository: D
     private val _weather = MutableStateFlow<List<Weather>>(listOf())
     val weather = _weather.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     init {
         fetchAllWeather()
     }
@@ -34,5 +38,10 @@ class FavoriteTabViewModel @Inject constructor(private val databaseRepository: D
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.updateWeather(weather)
         }
+    }
+
+    fun onRefresh(){
+        fetchAllWeather()
+        Log.d("AAA", "onRefresh")
     }
 }

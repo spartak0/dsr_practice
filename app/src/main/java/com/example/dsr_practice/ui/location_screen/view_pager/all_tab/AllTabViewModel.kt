@@ -1,5 +1,6 @@
 package com.example.dsr_practice.ui.location_screen.view_pager.all_tab
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dsr_practice.domain.model.Weather
@@ -12,11 +13,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AllTabViewModel @Inject constructor(private val databaseRepository: DatabaseRepository) :
-    ViewModel() {
+class AllTabViewModel @Inject constructor(
+    private val databaseRepository: DatabaseRepository,
+) : ViewModel() {
 
     private val _weather = MutableStateFlow<List<Weather>>(listOf())
     val weather = _weather.asStateFlow()
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
         fetchAllWeather()
@@ -34,5 +39,10 @@ class AllTabViewModel @Inject constructor(private val databaseRepository: Databa
         viewModelScope.launch(Dispatchers.IO) {
             databaseRepository.updateWeather(weather)
         }
+    }
+
+    fun onRefresh() {
+        fetchAllWeather()
+        Log.d("AAA", "onRefresh")
     }
 }
