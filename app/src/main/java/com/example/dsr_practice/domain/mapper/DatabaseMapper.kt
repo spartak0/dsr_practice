@@ -12,6 +12,12 @@ fun Weather.toEntity(): WeatherEntity = with(this) {
         currentTemp = currentTemp,
         isFavorite = isFavorite,
         isSecondDayForecast = isSecondDayForecast,
+        condition = condition,
+        conditionIcon = conditionIcon,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        pressure = pressure
+
     )
 }
 
@@ -24,5 +30,10 @@ fun WeatherEntity.toDomain(): Weather = with(this) {
         currentTemp = currentTemp,
         isFavorite = isFavorite,
         isSecondDayForecast = isSecondDayForecast,
+        condition = condition,
+        conditionIcon = conditionIcon,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        pressure = pressure
     )
 }

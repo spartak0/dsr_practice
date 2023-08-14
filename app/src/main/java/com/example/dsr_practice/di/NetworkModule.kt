@@ -1,13 +1,11 @@
 package com.example.dsr_practice.di
 
 import com.example.dsr_practice.data.network.api.RetrofitApi
-import com.example.dsr_practice.utils.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -21,19 +19,22 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient().newBuilder().addNetworkInterceptor { chain ->
-            val request: Request.Builder = chain.request().newBuilder()
-            val originalHttpUrl = chain.request().url()
-            val newUrl = originalHttpUrl.newBuilder()
-                .addQueryParameter("appid", Constants.API_KEY)
+            val originalRequest = chain.request()
+            val newHttpUrl = originalRequest.url.newBuilder()
+                .addQueryParameter("appid", RetrofitApi.API_KEY)
                 .addQueryParameter("units", "metric")
-                .addQueryParameter("exclude", "current, alerts").build()
-            request.url(newUrl)
-            chain.proceed(request.build())
+                .addQueryParameter("exclude", "minutely,hourly")
+                .build()
+            val newRequest = originalRequest.newBuilder()
+                .url(newHttpUrl)
+                .build()
+            chain.proceed(newRequest)
         }.build()
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+    fun provideRetrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
+        .client(client)
         .baseUrl(RetrofitApi.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

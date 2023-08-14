@@ -10,10 +10,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WeatherDao {
     @Query("SELECT * FROM ${WeatherEntity.TABLE_NAME}")
-    fun fetchWeatherList(): Flow<List<WeatherEntity>>
+    fun fetchWeatherList(): List<WeatherEntity>
 
-    @Query("SELECT * FROM ${WeatherEntity.TABLE_NAME} WHERE ${WeatherEntity.IS_FAVORITE_COLUMN}=1")
-    fun fetchFavoriteWeatherList(): Flow<List<WeatherEntity>>
+    @Query("SELECT * FROM ${WeatherEntity.TABLE_NAME}")
+    fun fetchWeatherListFlow(): Flow<List<WeatherEntity>>
+
+    @Query("SELECT * FROM ${WeatherEntity.TABLE_NAME} WHERE ${WeatherEntity.IS_FAVORITE_COLUMN} = 1")
+    fun fetchFavoriteWeatherListFlow(): Flow<List<WeatherEntity>>
+
+    @Query("SELECT * FROM ${WeatherEntity.TABLE_NAME} WHERE ${WeatherEntity.ID_COLUMN} = :id")
+    fun fetchById(id: Int): Flow<WeatherEntity>
 
     @Query("DELETE FROM ${WeatherEntity.TABLE_NAME} WHERE ${WeatherEntity.ID_COLUMN} = :id")
     fun deleteWeatherById(id: Int)

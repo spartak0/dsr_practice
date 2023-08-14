@@ -21,6 +21,16 @@ data class WeatherEntity(
     val isFavorite: Boolean = false,
     @ColumnInfo(name = IS_SECOND_DAY_FORECAST_COLUMN)
     val isSecondDayForecast: Boolean = false,
+    @ColumnInfo(name = CONDITION)
+    val condition: String = "",
+    @ColumnInfo(name = CONDITION_ICON)
+    val conditionIcon: String = "",
+    @ColumnInfo(name = WIND_SPEED)
+    val windSpeed: Double = 0.0,
+    @ColumnInfo(name = HUMIDITY)
+    val humidity: Double = 0.0,
+    @ColumnInfo(name = PRESSURE)
+    val pressure: Double = 0.0,
 ) {
     companion object {
         const val TABLE_NAME = "weather_table"
@@ -31,5 +41,10 @@ data class WeatherEntity(
         const val CURRENT_TEMP_COLUMN = "current_temp"
         const val IS_FAVORITE_COLUMN = "is_favorite"
         const val IS_SECOND_DAY_FORECAST_COLUMN = "is_second_day_forecast"
+        const val CONDITION = "condition"
+        const val CONDITION_ICON = "condition_icon"
+        const val WIND_SPEED = "wind_speed"
+        const val HUMIDITY = "humidity"
+        const val PRESSURE = "pressure"
     }
 }

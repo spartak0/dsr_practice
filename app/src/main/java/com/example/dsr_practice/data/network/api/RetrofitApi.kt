@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface RetrofitApi {
-    @GET("data/3.0/onecall")
+    @GET("data/2.5/onecall")
     suspend fun getWeatherByCoord(
         @Query("lat") lat: String?,
         @Query("lon") lon: String?
@@ -14,6 +14,6 @@ interface RetrofitApi {
 
     companion object {
         const val BASE_URL = "https://api.openweathermap.org/"
-
+        const val API_KEY = "f84d512e108bb1c37e3d87e758f31045"
     }
 }

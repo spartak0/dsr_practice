@@ -80,7 +80,7 @@ fun MapScreen(navigator: DestinationsNavigator) {
                 LocationNameScreenDestination(
                     weatherData = Weather(
                         lat = markerState.position.latitude,
-                        lon = markerState.position.latitude
+                        lon = markerState.position.longitude,
                     )
                 )
             )

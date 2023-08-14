@@ -14,7 +14,7 @@ import com.example.dsr_practice.domain.model.Weather
 fun LocationsList(
     list: List<Weather>,
     modifier: Modifier = Modifier,
-    itemOnClick: () -> Unit,
+    itemOnClick: (Weather) -> Unit,
     isFavoriteOnClick: (Weather) -> Unit
 ) {
     LazyColumn(
@@ -27,7 +27,7 @@ fun LocationsList(
                 city = weather.name,
                 currentTemp = weather.currentTemp.toInt(),
                 isFavoriteOnClick = { isFavoriteOnClick(weather) },
-                onClick = itemOnClick,
+                onClick = { itemOnClick(weather) },
                 isFavorite = weather.isFavorite,
                 modifier = Modifier
                     .fillMaxWidth()

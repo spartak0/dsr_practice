@@ -1,12 +1,15 @@
 package com.example.dsr_practice.ui.location_name_screen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -18,8 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
@@ -29,14 +34,23 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Destination
 @Composable
-fun LocationNameScreen(navigator: DestinationsNavigator, weatherData: Weather) {
+fun LocationNameScreen(
+    navigator: DestinationsNavigator,
+    weatherData: Weather,
+    viewModel: LocationNameViewModel = hiltViewModel()
+) {
     var name by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     LocationNameScreenContent(
         name = name,
         nameOnChange = { name = it },
         nextOnClick = {
-            navigator.navigate(
+            if (!viewModel.validTest(name)) Toast.makeText(
+                context,
+                context.getText(R.string.invalid_name), Toast.LENGTH_SHORT
+            ).show()
+            else navigator.navigate(
                 DetailsSettingsScreenDestination(
                     weatherData = weatherData.copy(
                         name = name
@@ -91,5 +105,9 @@ fun LocationNameScreenContent(
 
 @Composable
 fun LocationNameAppBar(backOnClick: () -> Unit) {
-    AppBar(title = stringResource(id = R.string.location_name), backOnClick = backOnClick)
+    AppBar(
+        title = stringResource(id = R.string.location_name),
+        navigationIcon = Icons.Default.ArrowBack,
+        navigationIconOnClick = backOnClick
+    )
 }

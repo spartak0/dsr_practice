@@ -1,7 +1,5 @@
 package com.example.dsr_practice.ui.composables
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -11,10 +9,18 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(title: String, backOnClick: () -> Unit, modifier: Modifier = Modifier) {
+fun AppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigationIcon: ImageVector? = null,
+    navigationIconOnClick: () -> Unit = {},
+    actionIcon: ImageVector? = null,
+    actionOnClick: () -> Unit = {},
+) {
     TopAppBar(
         title = {
             Text(
@@ -23,12 +29,25 @@ fun AppBar(title: String, backOnClick: () -> Unit, modifier: Modifier = Modifier
             )
         },
         navigationIcon = {
-            IconButton(onClick = backOnClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+            navigationIcon?.let { icon ->
+                IconButton(onClick = navigationIconOnClick) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        },
+        actions = {
+            actionIcon?.let { icon ->
+                IconButton(onClick = actionOnClick) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(

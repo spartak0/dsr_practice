@@ -37,7 +37,7 @@ fun LocationsViewPager(
         ContentLocationsViewPager(
             pagerState = pagerState,
             tabs = tabs,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }

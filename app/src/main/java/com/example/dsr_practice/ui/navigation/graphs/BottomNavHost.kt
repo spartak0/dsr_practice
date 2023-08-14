@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dsr_practice.ui.NavGraphs
+import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
 import com.example.dsr_practice.ui.destinations.LocationScreenDestination
 import com.example.dsr_practice.ui.destinations.MapScreenDestination
 import com.example.dsr_practice.ui.location_screen.LocationScreen
@@ -25,7 +26,15 @@ fun BottomNavHost(
         modifier = modifier,
     ) {
         composable(LocationScreenDestination) {
-            LocationScreen(navigateToMap = { externalNavController.navigate(MapScreenDestination) })
+            LocationScreen(
+                navigateToMap = { externalNavController.navigate(MapScreenDestination) },
+                navigateToDetails = { weather ->
+                    externalNavController.navigate(
+                        DetailsScreenDestination(
+                            weather = weather
+                        )
+                    )
+                })
         }
     }
 }

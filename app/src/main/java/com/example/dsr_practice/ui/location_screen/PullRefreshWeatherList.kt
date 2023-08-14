@@ -20,7 +20,7 @@ fun PullRefreshWeatherList(
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
     isFavoriteOnClick: (Weather) -> Unit,
-    itemOnClick: () -> Unit
+    itemOnClick: (Weather) -> Unit
 ) {
     Box(
         modifier = Modifier

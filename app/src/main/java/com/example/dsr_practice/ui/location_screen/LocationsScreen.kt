@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.view_pager.LocationsViewPager
 import com.example.dsr_practice.ui.location_screen.view_pager.LocationsViewPagerTab
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
@@ -32,11 +33,13 @@ import kotlinx.coroutines.launch
 @Composable
 @BottomNavGraph(start = true)
 @Destination
-fun LocationScreen(navigateToMap: () -> Unit) {
-    val tabs = LocationsViewPagerTab.values().toList()
+fun LocationScreen(navigateToMap: () -> Unit, navigateToDetails: (Weather) -> Unit) {
+    val tabs = listOf(
+        LocationsViewPagerTab.All(navigateToDetails),
+        LocationsViewPagerTab.Favorite(navigateToDetails)
+    )
     val pagerState = rememberPagerState { tabs.size }
     val scope = rememberCoroutineScope()
-
     LocationScreenContent(
         tabs = tabs,
         pagerState = pagerState,
@@ -45,8 +48,9 @@ fun LocationScreen(navigateToMap: () -> Unit) {
                 pagerState.animateScrollToPage(tabIndex)
             }
         },
-        navigateToMap = navigateToMap
+        navigateToMap = navigateToMap,
     )
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -57,21 +61,17 @@ fun LocationScreenContent(
     tabOnClick: (Int) -> Unit,
     navigateToMap: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            LocationsScreenTopAppBar()
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { navigateToMap() }) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = null)
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End
+    Scaffold(topBar = {
+        LocationsScreenTopAppBar()
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = { navigateToMap() }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = null)
+        }
+    }, floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             LocationsViewPager(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 tabs = tabs,
                 tabOnClick = tabOnClick,
                 pagerState = pagerState,
@@ -89,8 +89,7 @@ fun LocationsScreenTopAppBar() {
                 text = stringResource(R.string.locations),
                 color = MaterialTheme.colorScheme.onPrimary
             )
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+        }, colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
     )
