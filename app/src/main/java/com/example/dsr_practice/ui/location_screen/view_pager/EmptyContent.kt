@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EmptyContent(modifier: Modifier = Modifier) {
+fun EmptyContent(modifier: Modifier = Modifier, text: String) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Text(
-            text = "You don't have any added locations",
+            text = text,
             modifier = Modifier
                 .padding(16.dp)
         )

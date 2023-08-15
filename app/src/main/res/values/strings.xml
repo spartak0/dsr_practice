@@ -14,4 +14,6 @@
     <string name="this_action_cannot_be_undone">This action cannot be undone.</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="empty_locations">You don\'t have any added locations</string>
+    <string name="empty_favorite">You don\'t have any favorite locations</string>
 </resources>

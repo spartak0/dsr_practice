@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.LocationsScreenViewModel
 import com.example.dsr_practice.ui.location_screen.PullRefreshWeatherList
@@ -30,7 +32,11 @@ fun FavoriteTabScreen(
 
     Crossfade(targetState = weather.isEmpty(), label = "") { isEmpty ->
         when (isEmpty) {
-            true -> EmptyContent(modifier = Modifier.fillMaxSize())
+            true -> EmptyContent(
+                modifier = Modifier.fillMaxSize(),
+                text = stringResource(R.string.empty_favorite)
+            )
+
             false -> FavoriteTabContent(
                 list = weather,
                 pullRefreshState = pullRefreshState,

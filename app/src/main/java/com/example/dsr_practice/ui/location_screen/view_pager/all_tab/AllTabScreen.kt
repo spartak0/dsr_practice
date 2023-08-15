@@ -9,7 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.LocationsScreenViewModel
 import com.example.dsr_practice.ui.location_screen.PullRefreshWeatherList
@@ -28,9 +30,13 @@ fun AllTabScreen(
         onRefresh = viewModel::onRefresh,
     )
     Crossfade(targetState = weather.isEmpty(), label = "") {
-        when(it){
-            true->EmptyContent(modifier = Modifier.fillMaxSize())
-            false-> AllTabContent(
+        when (it) {
+            true -> EmptyContent(
+                modifier = Modifier.fillMaxSize(),
+                text = stringResource(R.string.empty_locations)
+            )
+
+            false -> AllTabContent(
                 list = weather,
                 pullRefreshState = pullRefreshState,
                 isRefreshing = isRefreshing,

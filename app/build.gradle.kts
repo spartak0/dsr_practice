@@ -45,7 +45,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
@@ -74,8 +74,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //navigation
-    implementation("io.github.raamcosta.compose-destinations:core:1.9.42-beta")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.42-beta")
+    implementation("io.github.raamcosta.compose-destinations:core:1.9.51")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.9.51")
 
     //google maps
     implementation("com.google.maps.android:maps-compose:2.11.4")
@@ -91,17 +91,20 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     //hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
+    implementation("com.google.dagger:hilt-android:2.47")
+    kapt("com.google.dagger:hilt-compiler:2.47")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     //coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     //room
     implementation("androidx.room:room-runtime:2.5.2")
     ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
+
+    //glide
+    implementation("com.github.bumptech.glide:compose:1.0.0-alpha.3")
 }
 kapt {
     correctErrorTypes = true

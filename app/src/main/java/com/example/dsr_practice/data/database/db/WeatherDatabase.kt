@@ -6,7 +6,7 @@ import com.example.dsr_practice.data.database.dao.WeatherDao
 import com.example.dsr_practice.data.database.entity.WeatherEntity
 
 
-@Database(entities = [WeatherEntity::class], version = WeatherDatabase.DATABASE_VERSION)
+@Database(entities = [WeatherEntity::class], version = WeatherDatabase.DATABASE_VERSION, exportSchema = false)
 abstract class WeatherDatabase : RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
 
