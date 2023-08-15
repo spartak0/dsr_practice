@@ -17,9 +17,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
@@ -35,6 +38,7 @@ import com.example.dsr_practice.utils.DefaultLatLng
 import com.example.dsr_practice.utils.isDefault
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -45,11 +49,13 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Destination
 @Composable
-fun MapScreen(navigator: DestinationsNavigator) {
+fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltViewModel()) {
     val moscow = LatLng(Constants.MOSCOW_LATITUDE, Constants.MOSCOW_LONGITUDE)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(moscow, 10f)
@@ -57,7 +63,10 @@ fun MapScreen(navigator: DestinationsNavigator) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val markerState by remember { mutableStateOf(MarkerState(DefaultLatLng.value)) }
+    val markerState by viewModel.markerState.collectAsState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
 
     MapContent(
         searchText = text,
@@ -70,7 +79,13 @@ fun MapScreen(navigator: DestinationsNavigator) {
         onActiveChange = { active = it },
         cameraPositionState = cameraPositionState,
         permissionsDismiss = { navigator.navigateUp() },
-        currentLocationOnClick = {},
+        currentLocationOnClick = {
+            scope.launch {
+                viewModel.getDeviceLocation(context)
+                delay(100)
+                cameraPositionState.animate(update = CameraUpdateFactory.newLatLngZoom(markerState.position,10f))
+            }
+        },
         markerState = markerState,
         onMapClick = { latLng ->
             markerState.position = latLng
@@ -136,7 +151,7 @@ fun MapContent(
             onMapClick = onMapClick
         ) {
             Marker(state = markerState, visible = markerVisibility, onClick = {
-                markerState.position = LatLng(0.0, 0.0)
+                markerState.position = DefaultLatLng.value
                 true
             })
 

@@ -10,4 +10,8 @@
     <string name="settings">Settings</string>
     <string name="show_location_weather">Show location weather</string>
     <string name="invalid_name">Invalid name</string>
+    <string name="delete_location">Delete location?</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>
