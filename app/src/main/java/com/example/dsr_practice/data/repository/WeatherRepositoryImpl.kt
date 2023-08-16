@@ -3,6 +3,7 @@ package com.example.dsr_practice.data.repository
 import com.example.dsr_practice.data.database.dao.WeatherDao
 import com.example.dsr_practice.data.database.entity.WeatherEntity
 import com.example.dsr_practice.data.network.api.RetrofitApi
+import com.example.dsr_practice.data.network.dto.DailyWeatherDto
 import com.example.dsr_practice.domain.mapper.toDomain
 import com.example.dsr_practice.domain.mapper.toEntity
 import com.example.dsr_practice.domain.model.Weather
@@ -35,6 +36,7 @@ class WeatherRepositoryImpl(
                         windSpeed = weatherDto.current.wind_speed,
                         humidity = weatherDto.current.humidity,
                         pressure = weatherDto.current.pressure,
+                        daily = weatherDto.daily.map(DailyWeatherDto::toEntity)
                     )
                     weatherDao.updateWeather(syncWeather)
                 }

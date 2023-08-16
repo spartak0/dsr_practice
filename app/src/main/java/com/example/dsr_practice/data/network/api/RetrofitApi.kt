@@ -15,5 +15,9 @@ interface RetrofitApi {
     companion object {
         const val BASE_URL = "https://api.openweathermap.org/"
         const val API_KEY = "f84d512e108bb1c37e3d87e758f31045"
+        private const val PREFIX_URL_ICON = "https://openweathermap.org/img/wn/"
+        private const val POSTFIX_URL_ICON = "@4x.png"
+
+        fun generateIconUrl(url: String) = PREFIX_URL_ICON + url + POSTFIX_URL_ICON
     }
 }

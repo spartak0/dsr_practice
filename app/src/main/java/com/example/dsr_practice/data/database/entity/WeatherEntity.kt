@@ -3,6 +3,8 @@ package com.example.dsr_practice.data.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.dsr_practice.data.database.converter.DailyConverter
 
 @Entity(tableName = "weather_table")
 data class WeatherEntity(
@@ -31,6 +33,9 @@ data class WeatherEntity(
     val humidity: Double = 0.0,
     @ColumnInfo(name = PRESSURE)
     val pressure: Double = 0.0,
+    @TypeConverters(DailyConverter::class)
+    @ColumnInfo(name = DAILY)
+    val daily: List<DailyEntity>
 ) {
     companion object {
         const val TABLE_NAME = "weather_table"
@@ -46,5 +51,15 @@ data class WeatherEntity(
         const val WIND_SPEED = "wind_speed"
         const val HUMIDITY = "humidity"
         const val PRESSURE = "pressure"
+        const val DAILY = "daily"
     }
 }
+
+data class DailyEntity(
+    val morn: Double = 0.0,
+    val day: Double = 0.0,
+    val eve: Double = 0.0,
+    val night: Double = 0.0,
+    val condition: String = "",
+    val conditionIcon: String = "",
+)
