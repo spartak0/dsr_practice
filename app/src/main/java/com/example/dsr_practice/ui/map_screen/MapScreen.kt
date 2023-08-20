@@ -8,13 +8,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SearchBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -31,7 +29,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Place
 import com.example.dsr_practice.domain.model.Weather
+import com.example.dsr_practice.ui.composables.SearchBar
 import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
 import com.example.dsr_practice.utils.Constants
 import com.example.dsr_practice.utils.DefaultLatLng
@@ -61,34 +61,36 @@ fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltVi
         position = CameraPosition.fromLatLngZoom(moscow, 10f)
     }
     var text by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val markerState by viewModel.markerState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
+    val autocompletePlaces by viewModel.autocompletePlaces.collectAsState()
 
     MapContent(
         searchText = text,
-        searchTextChange = { text = it },
-        onSearch = {
-            active = false
-            focusManager.clearFocus()
+        searchTextChange = {
+            text = it
+            viewModel.fetchPlaces(it)
         },
-        activeSearchBar = false,
-        onActiveChange = { active = it },
         cameraPositionState = cameraPositionState,
         permissionsDismiss = { navigator.navigateUp() },
         currentLocationOnClick = {
             scope.launch {
                 viewModel.getDeviceLocation(context)
                 delay(100)
-                cameraPositionState.animate(update = CameraUpdateFactory.newLatLngZoom(markerState.position,10f))
+                cameraPositionState.animate(
+                    update = CameraUpdateFactory.newLatLngZoom(
+                        markerState.position,
+                        10f
+                    )
+                )
             }
         },
         markerState = markerState,
         onMapClick = { latLng ->
             markerState.position = latLng
+            focusManager.clearFocus()
         },
         onNextClick = {
             navigator.navigate(
@@ -99,19 +101,31 @@ fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltVi
                     )
                 )
             )
+        },
+        autocompletePlaces = autocompletePlaces.data ?: listOf(),
+        placeOnClick = { place ->
+            val newLatLng = LatLng(place.lat, place.lon)
+            viewModel.setMarker(newLatLng)
+            scope.launch {
+                cameraPositionState.animate(
+                    update = CameraUpdateFactory.newLatLngZoom(
+                        newLatLng,
+                        10f
+                    )
+                )
+            }
+            focusManager.clearFocus()
         }
     )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapContent(
     searchText: String,
     searchTextChange: (String) -> Unit,
-    onSearch: (String) -> Unit,
-    activeSearchBar: Boolean,
-    onActiveChange: (Boolean) -> Unit,
+    autocompletePlaces: List<Place>,
+    placeOnClick: (Place) -> Unit,
     cameraPositionState: CameraPositionState,
     permissionsDismiss: () -> Unit,
     currentLocationOnClick: () -> Unit,
@@ -122,26 +136,6 @@ fun MapContent(
     val markerVisibility = !markerState.position.isDefault()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        SearchBar(
-            query = searchText,
-            onQueryChange = searchTextChange,
-            onSearch = onSearch,
-            active = activeSearchBar,
-            onActiveChange = onActiveChange,
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 16.dp)
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-        ) {
-
-        }
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -156,6 +150,17 @@ fun MapContent(
             })
 
         }
+        SearchBar(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            value = searchText,
+            onValueChange = searchTextChange,
+            autocompleteList = autocompletePlaces,
+            itemOnClick = placeOnClick,
+        )
         FloatingActionButton(
             onClick = currentLocationOnClick,
             modifier = Modifier

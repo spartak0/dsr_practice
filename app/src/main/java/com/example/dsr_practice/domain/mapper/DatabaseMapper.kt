@@ -8,6 +8,7 @@ import com.example.dsr_practice.domain.model.Weather
 fun Weather.toEntity(): WeatherEntity = with(this) {
     WeatherEntity(
         id = id,
+        dt = dt,
         name = name,
         lat = lat,
         lon = lon,
@@ -16,9 +17,6 @@ fun Weather.toEntity(): WeatherEntity = with(this) {
         isSecondDayForecast = isSecondDayForecast,
         condition = condition,
         conditionIcon = conditionIcon,
-        windSpeed = windSpeed,
-        humidity = humidity,
-        pressure = pressure,
         daily = daily.map(DailyWeather::toEntity)
     )
 }
@@ -26,6 +24,7 @@ fun Weather.toEntity(): WeatherEntity = with(this) {
 fun WeatherEntity.toDomain(): Weather = with(this) {
     Weather(
         id = id,
+        dt = dt,
         name = name,
         lat = lat,
         lon = lon,
@@ -34,31 +33,32 @@ fun WeatherEntity.toDomain(): Weather = with(this) {
         isSecondDayForecast = isSecondDayForecast,
         condition = condition,
         conditionIcon = conditionIcon,
-        windSpeed = windSpeed,
-        humidity = humidity,
-        pressure = pressure,
         daily = daily.map(DailyEntity::toDomain)
     )
 }
 
 fun DailyEntity.toDomain() = with(this) {
     DailyWeather(
+        dt = dt,
         morn = morn,
         day = day,
         eve = eve,
         night = night,
-        condition = condition,
-        conditionIcon = conditionIcon
+        windSpeed = windSpeed,
+        humidity = humidity,
+        pressure = pressure,
     )
 }
 
 fun DailyWeather.toEntity() = with(this) {
     DailyEntity(
+        dt = dt,
         morn = morn,
         day = day,
         eve = day,
         night = night,
-        condition = condition,
-        conditionIcon = conditionIcon,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        pressure = pressure,
     )
 }

@@ -2,7 +2,7 @@ package com.example.dsr_practice.data.repository
 
 import com.example.dsr_practice.data.database.dao.WeatherDao
 import com.example.dsr_practice.data.database.entity.WeatherEntity
-import com.example.dsr_practice.data.network.api.RetrofitApi
+import com.example.dsr_practice.data.network.api.WeatherApi
 import com.example.dsr_practice.data.network.dto.DailyWeatherDto
 import com.example.dsr_practice.domain.mapper.toDomain
 import com.example.dsr_practice.domain.mapper.toEntity
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 
 class WeatherRepositoryImpl(
     private val weatherDao: WeatherDao,
-    private val api: RetrofitApi,
+    private val api: WeatherApi,
 ) : WeatherRepository {
 
     override suspend fun fetchAllWeather(): Flow<List<Weather>> =
@@ -33,9 +33,6 @@ class WeatherRepositoryImpl(
                         currentTemp = weatherDto.current.temp,
                         condition = weatherDto.current.weather[0].main,
                         conditionIcon = weatherDto.current.weather[0].icon,
-                        windSpeed = weatherDto.current.wind_speed,
-                        humidity = weatherDto.current.humidity,
-                        pressure = weatherDto.current.pressure,
                         daily = weatherDto.daily.map(DailyWeatherDto::toEntity)
                     )
                     weatherDao.updateWeather(syncWeather)

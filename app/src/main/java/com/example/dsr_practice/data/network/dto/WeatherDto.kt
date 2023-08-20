@@ -8,8 +8,11 @@ data class WeatherDto(
 )
 
 data class DailyWeatherDto(
+    val dt: Long,
     val temp: DailyTempDto,
-    val weather: List<WeatherInfoDto>,
+    val wind_speed: Double,
+    val humidity: Double,
+    val pressure: Double,
 )
 
 data class DailyTempDto(
@@ -20,10 +23,8 @@ data class DailyTempDto(
 )
 
 data class CurrentWeatherDto(
+    val dt: Long,
     val temp: Double,
-    val wind_speed: Double,
-    val humidity: Double,
-    val pressure: Double,
     val weather: List<WeatherInfoDto>
 )
 

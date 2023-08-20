@@ -35,16 +35,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.dsr_practice.R
-import com.example.dsr_practice.data.network.api.RetrofitApi
+import com.example.dsr_practice.data.network.api.WeatherApi
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.utils.checkUnaryPlus
+import com.example.dsr_practice.utils.secToTime
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.util.Locale
 
 @Destination
 @Composable
@@ -106,70 +109,150 @@ fun DetailsScreenContent(
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.Start
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                GlideImage(
-                    model = RetrofitApi.generateIconUrl(weather.conditionIcon),
-                    contentDescription = null,
-                    modifier = Modifier.size(150.dp)
+            CurrentContent(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                currentTemp = weather.currentTemp.toInt(),
+                condition = weather.condition,
+                iconUrl = WeatherApi.generateIconUrl(weather.conditionIcon),
+            )
+            DailyContent(
+                date = weather.daily[0].dt.secToTime(Locale.ENGLISH),
+                mornTemp = weather.daily[0].morn.toInt(),
+                dayTemp = weather.daily[0].day.toInt(),
+                eveTemp = weather.daily[0].eve.toInt(),
+                nightTemp = weather.daily[0].night.toInt(),
+                windSpeed = weather.daily[0].windSpeed.toInt(),
+                humidity = weather.daily[0].humidity.toInt(),
+                pressure = weather.daily[0].pressure.toInt(),
+            )
+            AnimatedVisibility(visible = weather.isSecondDayForecast) {
+                DailyContent(
+                    modifier = Modifier.padding(top = 8.dp),
+                    date = weather.daily[1].dt.secToTime(Locale.ENGLISH),
+                    mornTemp = weather.daily[1].morn.toInt(),
+                    dayTemp = weather.daily[1].day.toInt(),
+                    eveTemp = weather.daily[1].eve.toInt(),
+                    nightTemp = weather.daily[1].night.toInt(),
+                    windSpeed = weather.daily[1].windSpeed.toInt(),
+                    humidity = weather.daily[1].humidity.toInt(),
+                    pressure = weather.daily[1].pressure.toInt(),
                 )
-                Column {
-                    Text(
-                        text = weather.condition,
-                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
-                    )
-                    Text(
-                        text = "${weather.currentTemp.toInt().checkUnaryPlus()}°C",
-                        style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
-                    )
-                }
+
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                DailyCard(
-                    name = stringResource(R.string.morning),
-                    iconId = R.drawable.sunrise_icon,
-                    temp = weather.daily[0].morn.toInt()
-                )
-                DailyCard(
-                    name = stringResource(R.string.day),
-                    iconId = R.drawable.sun_icon,
-                    temp = weather.daily[0].day.toInt()
-                )
-                DailyCard(
-                    name = stringResource(R.string.evening),
-                    iconId = R.drawable.moon_icon,
-                    temp = weather.daily[0].eve.toInt()
-                )
-                DailyCard(
-                    name = stringResource(R.string.night),
-                    iconId = R.drawable.full_moon_icon,
-                    temp = weather.daily[0].night.toInt()
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            InfoItem(iconId = R.drawable.wind_icon, text = "wind speed ${weather.windSpeed} m/s")
-            InfoItem(iconId = R.drawable.humidity_icon, text = "humidity ${weather.humidity}%")
-            InfoItem(iconId = R.drawable.pressure_icon, text = "pressure ${weather.pressure} hPa")
         }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun CurrentContent(
+    modifier: Modifier = Modifier,
+    condition: String,
+    currentTemp: Int,
+    iconUrl: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = modifier,
+    ) {
+        GlideImage(
+            model = iconUrl,
+            contentDescription = null,
+            modifier = Modifier.size(150.dp)
+        )
+        Column {
+            Text(
+                text = condition,
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
+            )
+            Text(
+                text = "${currentTemp.checkUnaryPlus()}°C",
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
+            )
+        }
+    }
+}
+
+@Composable
+fun DailyContent(
+    modifier: Modifier = Modifier,
+    date: String,
+    mornTemp: Int,
+    dayTemp: Int,
+    eveTemp: Int,
+    nightTemp: Int,
+    windSpeed: Int,
+    humidity: Int,
+    pressure: Int,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = date,
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 22.sp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 4.dp)
+        )
+        DailyForecast(
+            modifier = Modifier.fillMaxWidth(),
+            mornTemp = mornTemp,
+            dayTemp = dayTemp,
+            eveTemp = eveTemp,
+            nightTemp = nightTemp,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        InfoItem(iconId = R.drawable.wind_icon, text = "wind speed $windSpeed m/s")
+        InfoItem(iconId = R.drawable.humidity_icon, text = "humidity $humidity%")
+        InfoItem(iconId = R.drawable.pressure_icon, text = "pressure $pressure hPa")
+    }
+}
+
+@Composable
+fun DailyForecast(
+    modifier: Modifier = Modifier,
+    mornTemp: Int,
+    dayTemp: Int,
+    eveTemp: Int,
+    nightTemp: Int
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        DailyCard(
+            name = stringResource(R.string.morning),
+            iconId = R.drawable.sunrise_icon,
+            temp = mornTemp
+        )
+        DailyCard(
+            name = stringResource(R.string.day),
+            iconId = R.drawable.sun_icon,
+            temp = dayTemp
+        )
+        DailyCard(
+            name = stringResource(R.string.evening),
+            iconId = R.drawable.moon_icon,
+            temp = eveTemp
+        )
+        DailyCard(
+            name = stringResource(R.string.night),
+            iconId = R.drawable.full_moon_icon,
+            temp = nightTemp
+        )
     }
 }
 
 @Composable
 fun DailyCard(name: String, iconId: Int, temp: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = name)
+        Text(text = name, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 20.sp))
         Icon(
             painter = painterResource(id = iconId),
             contentDescription = null,
             modifier = Modifier.size(48.dp)
         )
-        Text(text = temp.checkUnaryPlus())
+        Text(text = temp.checkUnaryPlus(),style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 18.sp))
     }
 }
 
@@ -187,7 +270,7 @@ fun InfoItem(iconId: Int, text: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300)
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 20.sp)
         )
     }
 }

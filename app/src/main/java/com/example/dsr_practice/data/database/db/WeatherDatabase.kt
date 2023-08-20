@@ -19,6 +19,6 @@ abstract class WeatherDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "weather_database"
-        const val DATABASE_VERSION = 5
+        const val DATABASE_VERSION = 7
     }
 }

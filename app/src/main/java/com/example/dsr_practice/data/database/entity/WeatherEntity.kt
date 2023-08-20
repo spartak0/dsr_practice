@@ -11,6 +11,8 @@ data class WeatherEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID_COLUMN)
     val id: Int = 0,
+    @ColumnInfo(name = DATE)
+    val dt: Long,
     @ColumnInfo(name = NAME_COLUMN)
     val name: String = "",
     @ColumnInfo(name = LAN_COLUMN)
@@ -27,12 +29,6 @@ data class WeatherEntity(
     val condition: String = "",
     @ColumnInfo(name = CONDITION_ICON)
     val conditionIcon: String = "",
-    @ColumnInfo(name = WIND_SPEED)
-    val windSpeed: Double = 0.0,
-    @ColumnInfo(name = HUMIDITY)
-    val humidity: Double = 0.0,
-    @ColumnInfo(name = PRESSURE)
-    val pressure: Double = 0.0,
     @TypeConverters(DailyConverter::class)
     @ColumnInfo(name = DAILY)
     val daily: List<DailyEntity>
@@ -40,6 +36,7 @@ data class WeatherEntity(
     companion object {
         const val TABLE_NAME = "weather_table"
         const val ID_COLUMN = "id"
+        const val DATE = "date"
         const val NAME_COLUMN = "name"
         const val LAN_COLUMN = "lan"
         const val LON_COLUMN = "lon"
@@ -48,18 +45,17 @@ data class WeatherEntity(
         const val IS_SECOND_DAY_FORECAST_COLUMN = "is_second_day_forecast"
         const val CONDITION = "condition"
         const val CONDITION_ICON = "condition_icon"
-        const val WIND_SPEED = "wind_speed"
-        const val HUMIDITY = "humidity"
-        const val PRESSURE = "pressure"
         const val DAILY = "daily"
     }
 }
 
 data class DailyEntity(
+    val dt: Long = 0,
     val morn: Double = 0.0,
     val day: Double = 0.0,
     val eve: Double = 0.0,
     val night: Double = 0.0,
-    val condition: String = "",
-    val conditionIcon: String = "",
+    val windSpeed: Double = 0.0,
+    val humidity: Double = 0.0,
+    val pressure: Double = 0.0,
 )
