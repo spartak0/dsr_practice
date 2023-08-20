@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.dsr_practice.domain.model.Units
 import com.example.dsr_practice.domain.model.Weather
 
 @Composable
@@ -15,7 +16,8 @@ fun LocationsList(
     list: List<Weather>,
     modifier: Modifier = Modifier,
     itemOnClick: (Weather) -> Unit,
-    isFavoriteOnClick: (Weather) -> Unit
+    isFavoriteOnClick: (Weather) -> Unit,
+    units: Units,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -29,6 +31,7 @@ fun LocationsList(
                 isFavoriteOnClick = { isFavoriteOnClick(weather) },
                 onClick = { itemOnClick(weather) },
                 isFavorite = weather.isFavorite,
+                units = units,
                 modifier = Modifier
                     .fillMaxWidth()
             )

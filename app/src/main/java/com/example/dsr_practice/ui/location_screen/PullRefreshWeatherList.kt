@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.dsr_practice.domain.model.Units
 import com.example.dsr_practice.domain.model.Weather
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -20,7 +21,8 @@ fun PullRefreshWeatherList(
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
     isFavoriteOnClick: (Weather) -> Unit,
-    itemOnClick: (Weather) -> Unit
+    itemOnClick: (Weather) -> Unit,
+    units: Units,
 ) {
     Box(
         modifier = Modifier
@@ -34,6 +36,7 @@ fun PullRefreshWeatherList(
                 .fillMaxSize(),
             itemOnClick = itemOnClick,
             isFavoriteOnClick = isFavoriteOnClick,
+            units= units,
         )
         PullRefreshIndicator(
             refreshing = isRefreshing,

@@ -4,20 +4,15 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
+import com.example.dsr_practice.ui.composables.VerticalRadioButtonGroup
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -43,7 +39,7 @@ fun DetailsSettingsScreen(
     weatherData: Weather,
     viewModel: DetailsSettingsViewModel = hiltViewModel()
 ) {
-    val options = RadioButtonOptions.values().toList()
+    val options = ForecastRadioButtonOptions.values().toList()
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(options[0]) }
 
     DetailsSettingsScreenContent(
@@ -54,8 +50,8 @@ fun DetailsSettingsScreen(
         nextOnClick = {
             val newWeather = weatherData.copy(
                 isSecondDayForecast = when (selectedOption) {
-                    RadioButtonOptions.OneDay -> false
-                    RadioButtonOptions.TwoDay -> true
+                    ForecastRadioButtonOptions.OneDay -> false
+                    ForecastRadioButtonOptions.TwoDay -> true
                 }
             )
             viewModel.addWeatherInDatabase(newWeather)
@@ -74,9 +70,9 @@ fun DetailsSettingsScreen(
 @Composable
 fun DetailsSettingsScreenContent(
     backOnClick: () -> Unit,
-    options: List<RadioButtonOptions>,
-    selectedOption: RadioButtonOptions,
-    onOptionSelected: (RadioButtonOptions) -> Unit,
+    options: List<ForecastRadioButtonOptions>,
+    selectedOption: ForecastRadioButtonOptions,
+    onOptionSelected: (ForecastRadioButtonOptions) -> Unit,
     nextOnClick: () -> Unit,
 ) {
     Scaffold(topBar = { DetailsSettingsAppBar(backOnClick = backOnClick) }) {
@@ -92,8 +88,9 @@ fun DetailsSettingsScreenContent(
                     text = stringResource(R.string.show_location_weather),
                     style = MaterialTheme.typography.headlineSmall
                 )
-                RadioButtonGroup(
+                VerticalRadioButtonGroup(
                     options = options,
+                    optionsTitle = options.map { it.description },
                     selectedOption = selectedOption,
                     onOptionSelected = onOptionSelected,
                 )
@@ -113,40 +110,6 @@ fun DetailsSettingsScreenContent(
         }
 
 
-    }
-}
-
-@Composable
-fun RadioButtonGroup(
-    options: List<RadioButtonOptions>,
-    selectedOption: RadioButtonOptions,
-    onOptionSelected: (RadioButtonOptions) -> Unit
-) {
-    Column {
-        options.forEach { option ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = (option == selectedOption),
-                        onClick = {
-                            onOptionSelected(option)
-                        }
-                    )
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (option == selectedOption),
-                    onClick = { onOptionSelected(option) }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = option.description,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
     }
 }
 

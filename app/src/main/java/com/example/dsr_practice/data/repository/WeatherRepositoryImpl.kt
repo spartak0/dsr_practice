@@ -7,6 +7,7 @@ import com.example.dsr_practice.data.network.dto.DailyWeatherDto
 import com.example.dsr_practice.domain.mapper.toDomain
 import com.example.dsr_practice.domain.mapper.toEntity
 import com.example.dsr_practice.domain.model.Weather
+import com.example.dsr_practice.domain.repository.UserRepository
 import com.example.dsr_practice.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 class WeatherRepositoryImpl(
     private val weatherDao: WeatherDao,
     private val api: WeatherApi,
+    private val userRepository: UserRepository,
 ) : WeatherRepository {
 
     override suspend fun fetchAllWeather(): Flow<List<Weather>> =
@@ -26,8 +28,11 @@ class WeatherRepositoryImpl(
     override suspend fun syncWeatherData() {
         weatherDao.fetchWeatherList().forEach { weatherEntity ->
             try {
+                val unit = userRepository.getUnit()
                 api.getWeatherByCoord(
-                    weatherEntity.lat.toString(), weatherEntity.lon.toString()
+                    lat = weatherEntity.lat.toString(),
+                    lon = weatherEntity.lon.toString(),
+                    units = unit.title
                 ).body()?.let { weatherDto ->
                     val syncWeather = weatherEntity.copy(
                         currentTemp = weatherDto.current.temp,

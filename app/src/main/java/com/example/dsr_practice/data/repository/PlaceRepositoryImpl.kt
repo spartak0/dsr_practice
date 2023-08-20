@@ -15,7 +15,6 @@ class PlaceRepositoryImpl(val api: PlacesApi) : PlaceRepository {
         try {
             val response = api.getPredictions(input = input)
             if (response.isSuccessful) response.body()?.let { predictions ->
-                Log.d("AAA", "fetchPlaces predictions: $predictions")
                 val places = predictions.predictions.map { googlePrediction ->
                     val innerResponse = api.getPlace(placeId = googlePrediction.place_id)
                     innerResponse.body()?.toDomain() ?: Place()

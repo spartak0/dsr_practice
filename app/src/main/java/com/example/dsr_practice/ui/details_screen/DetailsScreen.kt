@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.dsr_practice.R
 import com.example.dsr_practice.data.network.api.WeatherApi
+import com.example.dsr_practice.domain.model.Units
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.utils.checkUnaryPlus
@@ -57,8 +59,10 @@ fun DetailsScreen(
     viewModel: DetailsScreenViewModel = hiltViewModel()
 ) {
     var dialog by remember { mutableStateOf(false) }
+    val units by viewModel.currentUnits.collectAsState()
     DetailsScreenContent(weather = weather,
         navigationIconOnClick = { navigator.navigateUp() },
+        units = units,
         actionIconOnClick = {
             dialog = true
         })
@@ -87,11 +91,10 @@ fun DeleteDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
         })
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailsScreenContent(
-    weather: Weather, navigationIconOnClick: () -> Unit, actionIconOnClick: () -> Unit
+    weather: Weather, units: Units, navigationIconOnClick: () -> Unit, actionIconOnClick: () -> Unit
 ) {
     Scaffold(topBar = {
         DetailsAppBar(
@@ -114,6 +117,7 @@ fun DetailsScreenContent(
                 currentTemp = weather.currentTemp.toInt(),
                 condition = weather.condition,
                 iconUrl = WeatherApi.generateIconUrl(weather.conditionIcon),
+                units = units,
             )
             DailyContent(
                 date = weather.daily[0].dt.secToTime(Locale.ENGLISH),
@@ -124,6 +128,7 @@ fun DetailsScreenContent(
                 windSpeed = weather.daily[0].windSpeed.toInt(),
                 humidity = weather.daily[0].humidity.toInt(),
                 pressure = weather.daily[0].pressure.toInt(),
+                units = units,
             )
             AnimatedVisibility(visible = weather.isSecondDayForecast) {
                 DailyContent(
@@ -136,6 +141,7 @@ fun DetailsScreenContent(
                     windSpeed = weather.daily[1].windSpeed.toInt(),
                     humidity = weather.daily[1].humidity.toInt(),
                     pressure = weather.daily[1].pressure.toInt(),
+                    units = units,
                 )
 
             }
@@ -149,7 +155,8 @@ fun CurrentContent(
     modifier: Modifier = Modifier,
     condition: String,
     currentTemp: Int,
-    iconUrl: String
+    iconUrl: String,
+    units: Units,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -167,7 +174,7 @@ fun CurrentContent(
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
             )
             Text(
-                text = "${currentTemp.checkUnaryPlus()}°C",
+                text = currentTemp.checkUnaryPlus() + units.tempUnit,
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
             )
         }
@@ -185,11 +192,15 @@ fun DailyContent(
     windSpeed: Int,
     humidity: Int,
     pressure: Int,
+    units: Units,
 ) {
     Column(modifier = modifier) {
         Text(
             text = date,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 22.sp),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.W300,
+                fontSize = 22.sp
+            ),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 4.dp)
@@ -202,9 +213,12 @@ fun DailyContent(
             nightTemp = nightTemp,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        InfoItem(iconId = R.drawable.wind_icon, text = "wind speed $windSpeed m/s")
+        InfoItem(iconId = R.drawable.wind_icon, text = "wind speed $windSpeed ${units.speedUnit}")
         InfoItem(iconId = R.drawable.humidity_icon, text = "humidity $humidity%")
-        InfoItem(iconId = R.drawable.pressure_icon, text = "pressure $pressure hPa")
+        InfoItem(
+            iconId = R.drawable.pressure_icon,
+            text = "pressure $pressure ${units.pressureUnit}"
+        )
     }
 }
 
@@ -246,13 +260,25 @@ fun DailyForecast(
 @Composable
 fun DailyCard(name: String, iconId: Int, temp: Int) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = name, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 20.sp))
+        Text(
+            text = name,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.W300,
+                fontSize = 20.sp
+            )
+        )
         Icon(
             painter = painterResource(id = iconId),
             contentDescription = null,
             modifier = Modifier.size(48.dp)
         )
-        Text(text = temp.checkUnaryPlus(),style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 18.sp))
+        Text(
+            text = temp.checkUnaryPlus(),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.W300,
+                fontSize = 18.sp
+            )
+        )
     }
 }
 
@@ -270,7 +296,10 @@ fun InfoItem(iconId: Int, text: String, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.W300, fontSize = 20.sp)
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.W300,
+                fontSize = 20.sp
+            )
         )
     }
 }

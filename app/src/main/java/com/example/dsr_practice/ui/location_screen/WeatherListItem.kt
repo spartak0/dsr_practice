@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dsr_practice.domain.model.Units
 
 @Composable
 fun WeatherListItem(
@@ -29,6 +30,7 @@ fun WeatherListItem(
     isFavorite: Boolean,
     isFavoriteOnClick: () -> Unit,
     onClick: () -> Unit,
+    units: Units,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier
@@ -45,7 +47,7 @@ fun WeatherListItem(
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
                 )
                 Text(
-                    text = "Current temperature: $currentTemp C",
+                    text = "Current temperature: $currentTemp ${units.tempUnit}",
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
                     color = MaterialTheme.colorScheme.outline
                 )

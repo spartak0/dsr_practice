@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.model.Units
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.LocationsScreenViewModel
 import com.example.dsr_practice.ui.location_screen.PullRefreshWeatherList
@@ -29,7 +30,7 @@ fun FavoriteTabScreen(
         refreshing = isRefreshing,
         onRefresh = viewModel::onRefresh,
     )
-
+    val currentUnits by viewModel.currentUnits.collectAsState()
     Crossfade(targetState = weather.isEmpty(), label = "") { isEmpty ->
         when (isEmpty) {
             true -> EmptyContent(
@@ -48,7 +49,8 @@ fun FavoriteTabScreen(
                         )
                     )
                 },
-                itemOnClick = { weather -> navigateToDetails(weather) }
+                itemOnClick = { weather -> navigateToDetails(weather) },
+                units = currentUnits,
             )
 
         }
@@ -63,13 +65,15 @@ fun FavoriteTabContent(
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
     isFavoriteOnClick: (Weather) -> Unit,
-    itemOnClick: (Weather) -> Unit
+    itemOnClick: (Weather) -> Unit,
+    units: Units,
 ) {
     PullRefreshWeatherList(
         list = list,
         pullRefreshState = pullRefreshState,
         isRefreshing = isRefreshing,
         isFavoriteOnClick = isFavoriteOnClick,
-        itemOnClick = itemOnClick
+        itemOnClick = itemOnClick,
+        units= units,
     )
 }
