@@ -2,12 +2,14 @@ package com.example.dsr_practice.ui.settings_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dsr_practice.domain.model.Units
+import com.example.dsr_practice.domain.model.settings.ThemeState
+import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,10 +17,15 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(private val userRepository: UserRepository) :
     ViewModel() {
 
-    private val _currentUnits = MutableStateFlow<Units>(Units.Imperial)
+    private val _currentUnits = MutableStateFlow<Units>(Units.Metric)
     val currentUnits = _currentUnits.asStateFlow()
 
+    private val _useDarkTheme = MutableStateFlow<ThemeState>(ThemeState.System)
+    val useDarkTheme = _useDarkTheme.asStateFlow()
+
+
     init {
+        fetchThemeState()
         fetchCurrentUnits()
     }
 
@@ -28,11 +35,25 @@ class SettingsViewModel @Inject constructor(private val userRepository: UserRepo
         }
     }
 
-    fun fetchCurrentUnits() {
+    private fun fetchCurrentUnits() {
         viewModelScope.launch(Dispatchers.IO) {
-            _currentUnits.value = userRepository.getUnit()
+            userRepository.observeUnit().collectLatest { units ->
+                _currentUnits.value = units
+            }
         }
     }
 
+    fun setThemeSettings(themeState: ThemeState) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.setThemeSettings(themeState)
+        }
+    }
 
+    private fun fetchThemeState() {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.observeThemeState().collectLatest { themeState ->
+                _useDarkTheme.value = themeState
+            }
+        }
+    }
 }

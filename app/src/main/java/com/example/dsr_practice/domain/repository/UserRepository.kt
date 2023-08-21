@@ -1,8 +1,12 @@
 package com.example.dsr_practice.domain.repository
 
-import com.example.dsr_practice.domain.model.Units
+import com.example.dsr_practice.domain.model.settings.ThemeState
+import com.example.dsr_practice.domain.model.settings.Units
+import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
-    fun setUnit(units: Units)
-    fun getUnit(): Units
+    suspend fun setUnit(units: Units)
+    fun observeUnit(): Flow<Units>
+    fun observeThemeState(): Flow<ThemeState>
+    suspend fun setThemeSettings(themeState: ThemeState)
 }

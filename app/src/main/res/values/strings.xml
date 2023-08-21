@@ -20,4 +20,6 @@
     <string name="day">Day</string>
     <string name="evening">Evening</string>
     <string name="night">Night</string>
+    <string name="units">Units</string>
+    <string name="theme">Theme</string>
 </resources>

@@ -7,7 +7,7 @@ import com.example.dsr_practice.data.network.api.WeatherApi
 import com.example.dsr_practice.data.repository.PlaceRepositoryImpl
 import com.example.dsr_practice.data.repository.UserRepositoryImpl
 import com.example.dsr_practice.data.repository.WeatherRepositoryImpl
-import com.example.dsr_practice.domain.UserSharedPrefHelper
+import com.example.dsr_practice.domain.UserPrefHelper
 import com.example.dsr_practice.domain.repository.PlaceRepository
 import com.example.dsr_practice.domain.repository.UserRepository
 import com.example.dsr_practice.domain.repository.WeatherRepository
@@ -24,23 +24,23 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideUserSharedPrefHelper(
+    fun provideUserPrefHelper(
         @ApplicationContext context: Context
-    ): UserSharedPrefHelper = UserSharedPrefHelper(context)
+    ): UserPrefHelper = UserPrefHelper(context)
 
     @Provides
     @Singleton
     fun provideUserRepository(
-        userSharedPrefHelper: UserSharedPrefHelper,
-    ): UserRepository = UserRepositoryImpl(userSharedPrefHelper)
+        userPrefHelper: UserPrefHelper,
+    ): UserRepository = UserRepositoryImpl(userPrefHelper)
 
     @Provides
     @Singleton
     fun provideWeatherRepository(
         api: WeatherApi,
         dao: WeatherDao,
-        userRepository: UserRepository,
-    ): WeatherRepository = WeatherRepositoryImpl(dao, api, userRepository)
+        userPrefHelper: UserPrefHelper,
+    ): WeatherRepository = WeatherRepositoryImpl(dao, api, userPrefHelper)
 
     @Provides
     @Singleton

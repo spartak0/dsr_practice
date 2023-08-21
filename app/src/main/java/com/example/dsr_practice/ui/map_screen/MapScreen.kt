@@ -168,7 +168,7 @@ fun MapContent(
                 .align(Alignment.BottomEnd)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_my_location_24),
+                painter = painterResource(id = R.drawable.my_location_icon),
                 contentDescription = null
             )
         }

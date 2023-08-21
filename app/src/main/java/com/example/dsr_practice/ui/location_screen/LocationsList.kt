@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.dsr_practice.domain.model.Units
+import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.model.Weather
 
 @Composable

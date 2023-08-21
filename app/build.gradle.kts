@@ -108,6 +108,9 @@ dependencies {
 
     //glide
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.3")
+
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
 kapt {
     correctErrorTypes = true

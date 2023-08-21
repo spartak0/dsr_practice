@@ -17,19 +17,19 @@ sealed class BottomBarScreenModel(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    object LocationScreen : BottomBarScreenModel(
+    data object LocationScreen : BottomBarScreenModel(
         direction = LocationScreenDestination,
         label = R.string.location,
         icon = Icons.Default.LocationOn
     )
 
-    object TriggersScreen : BottomBarScreenModel(
+    data object TriggersScreen : BottomBarScreenModel(
         direction = TriggersScreenDestination,
         label = R.string.triggers,
         icon = Icons.Default.Notifications
     )
 
-    object SettingsScreen : BottomBarScreenModel(
+    data object SettingsScreen : BottomBarScreenModel(
         direction = SettingsScreenDestination,
         label = R.string.settings,
         icon = Icons.Default.Settings

@@ -1,4 +1,4 @@
-package com.example.dsr_practice.domain.model
+package com.example.dsr_practice.domain.model.settings
 
 sealed class Units(
     val title: String,
