@@ -13,5 +13,6 @@ fun Trigger.toEntity() = with(this) {
         pressure = pressure,
         locationId = locationId,
         locationName = locationName,
+        units = units?.value
     )
 }

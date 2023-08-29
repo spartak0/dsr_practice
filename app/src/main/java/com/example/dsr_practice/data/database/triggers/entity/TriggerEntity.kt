@@ -23,6 +23,8 @@ data class TriggerEntity(
     val locationId: Int = 0,
     @ColumnInfo(name = LOCATION_NAME)
     val locationName: String? = null,
+    @ColumnInfo(name = UNITS_COLUMN)
+    val units: String? = null,
 ) {
     companion object {
         const val TABLE_NAME = "triggers_table"
@@ -34,5 +36,6 @@ data class TriggerEntity(
         const val PRESSURE_COLUMN = "pressure"
         const val LOCATION_ID = "location_id"
         const val LOCATION_NAME = "location_name"
+        const val UNITS_COLUMN = "units"
     }
 }

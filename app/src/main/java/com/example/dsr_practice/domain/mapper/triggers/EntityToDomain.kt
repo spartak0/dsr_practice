@@ -1,6 +1,7 @@
 package com.example.dsr_practice.domain.mapper.triggers
 
 import com.example.dsr_practice.data.database.triggers.entity.TriggerEntity
+import com.example.dsr_practice.domain.mapper.settings.toUnitsOrNull
 import com.example.dsr_practice.domain.model.Trigger
 
 fun TriggerEntity.toDomain() = with(this) {
@@ -13,5 +14,6 @@ fun TriggerEntity.toDomain() = with(this) {
         pressure = pressure,
         locationId = locationId,
         locationName = locationName,
+        units = units.toUnitsOrNull()
     )
 }

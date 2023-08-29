@@ -14,6 +14,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.UserPrefHelper
 import com.example.dsr_practice.domain.repository.TriggersRepository
 import com.example.dsr_practice.domain.repository.WeatherRepository
 import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
@@ -25,8 +26,9 @@ import kotlin.math.floor
 
 @HiltWorker
 class TriggersWorker @AssistedInject constructor(
-    val weatherRepository: WeatherRepository,
-    val triggersRepository: TriggersRepository,
+    private val weatherRepository: WeatherRepository,
+    private val triggersRepository: TriggersRepository,
+    private val userPrefHelper: UserPrefHelper,
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
@@ -34,14 +36,13 @@ class TriggersWorker @AssistedInject constructor(
         createNotificationChannel()
     }
 
-
     @SuppressLint("MissingPermission")
-    private fun notification(triggerId: Int) {
+    private suspend fun notification(placeId: Int) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        intent.putExtra(START_SCREEN_KEY, DetailsScreenDestination.route)
-        intent.putExtra(TRIGGER_ID_KEY, triggerId)
+        userPrefHelper.setTriggerId(placeId)
+        userPrefHelper.setStartRoute(DetailsScreenDestination.route)
         val pendingIntent =
             PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
@@ -84,7 +85,6 @@ class TriggersWorker @AssistedInject constructor(
             t.printStackTrace()
             Result.failure()
         }
-
         return Result.success()
     }
 
@@ -101,11 +101,9 @@ class TriggersWorker @AssistedInject constructor(
     }
 
     companion object {
-        const val WORK_NAME = "triggers_work"
         private const val CHANNEL_NAME = "channel"
         private const val CHANNEL_ID = "channel_id"
         private const val NOTIFY_ID = 1234
-        private const val START_SCREEN_KEY = "start_key"
-        private const val TRIGGER_ID_KEY = "details_id"
+        const val WORK_NAME = "triggers_work"
     }
 }

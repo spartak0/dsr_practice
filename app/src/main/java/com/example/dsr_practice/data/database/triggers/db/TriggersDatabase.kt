@@ -15,6 +15,6 @@ abstract class TriggersDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "triggers_database"
-        const val DATABASE_VERSION = 3
+        const val DATABASE_VERSION = 4
     }
 }

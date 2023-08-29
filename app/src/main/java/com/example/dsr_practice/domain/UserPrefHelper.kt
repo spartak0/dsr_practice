@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.dsr_practice.domain.mapper.settings.toThemeState
@@ -18,6 +19,16 @@ const val USER_SHARED_PREF = "userSharedPref"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_SHARED_PREF)
 
 class UserPrefHelper(val context: Context) {
+
+    suspend fun setTriggerId(id: Int) = saveData(WEATHER_ID_KEY, id)
+    fun observeWeatherId() = getData().map { prefs ->
+        prefs[WEATHER_ID_KEY]?.toInt()
+    }
+
+    suspend fun setStartRoute(route: String) = saveData(START_ROUTE_KEY, route)
+    fun observeStartRoute() = getData().map { prefs ->
+        prefs[START_ROUTE_KEY].toString()
+    }
 
     suspend fun setUnit(units: Units) = saveData(UNIT_KEY, units.value)
 
@@ -39,10 +50,18 @@ class UserPrefHelper(val context: Context) {
         }
     }
 
+    private suspend fun saveData(key: Preferences.Key<Int>, value: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[key] = value
+        }
+    }
+
     private fun getData(): Flow<Preferences> = context.dataStore.data
 
     companion object {
         val UNIT_KEY = stringPreferencesKey("unit")
         val THEME_KEY = stringPreferencesKey("theme")
+        val START_ROUTE_KEY = stringPreferencesKey("start_route")
+        val WEATHER_ID_KEY = intPreferencesKey("trigger_id_key")
     }
 }

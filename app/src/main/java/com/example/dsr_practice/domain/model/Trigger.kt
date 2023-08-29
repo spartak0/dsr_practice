@@ -1,6 +1,7 @@
 package com.example.dsr_practice.domain.model
 
 import android.os.Parcelable
+import com.example.dsr_practice.domain.model.settings.Units
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -13,4 +14,5 @@ data class Trigger(
     val pressure: Double? = null,
     val locationId: Int = 0,
     val locationName: String? = null,
+    val units: Units? = null,
 ) : Parcelable

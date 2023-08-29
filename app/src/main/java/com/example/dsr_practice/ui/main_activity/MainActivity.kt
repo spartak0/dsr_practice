@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             val viewModel: MainActivityViewModel = hiltViewModel()
             val useDarkTheme by viewModel.useDarkTheme.collectAsState()
 
+
             DsrPracticeTheme(
                 useDarkTheme = when (useDarkTheme) {
                     ThemeState.Dark -> true

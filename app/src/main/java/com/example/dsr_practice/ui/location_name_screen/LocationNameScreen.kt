@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
@@ -60,7 +63,7 @@ fun LocationNameScreen(
             )
         },
         backOnClick = { navigator.navigateUp() })
-    LaunchedEffect(true){
+    LaunchedEffect(true) {
         viewModel.fetchPlaceName(LatLng(weatherData.lat, weatherData.lon))
     }
 
@@ -84,6 +87,10 @@ fun LocationNameScreenContent(
                 onValueChange = nameOnChange,
                 singleLine = true,
                 label = { Text(text = stringResource(R.string.location_name)) },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(
+                    onNext = { nextOnClick() }
+                ),
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()

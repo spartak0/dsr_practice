@@ -20,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +50,7 @@ fun TriggerDetailsScreen(
     navigator: DestinationsNavigator,
     viewModel: TriggersDetailsViewModel = hiltViewModel(),
 ) {
-    val units by viewModel.currentUnits.collectAsState()
+    val units = trigger.units?:Units.Metric
     var dialog by remember { mutableStateOf(false) }
 
     TriggerDetailsContent(

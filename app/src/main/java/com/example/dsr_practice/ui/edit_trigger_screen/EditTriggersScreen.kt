@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,20 +32,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
+import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.ui.composables.DeleteDialog
 import com.example.dsr_practice.ui.destinations.ChooseBindingLocaleScreenDestination
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.example.dsr_practice.ui.destinations.TriggerDetailsScreenDestination
+import com.example.dsr_practice.ui.settings_screen.UnitsSettings
 import com.example.dsr_practice.utils.toIntString
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -66,6 +72,8 @@ fun EditTriggersScreen(
     var dialog by remember { mutableStateOf(false) }
     val binding = trigger.locationName ?: ""
     val context = LocalContext.current
+    val unitsOptions = listOf(Units.Metric, Units.Imperial)
+    var unitsSelectedOptions by remember { mutableStateOf(trigger.units ?: Units.Metric) }
     EditTriggersContent(name = name,
         nameOnChange = { name = it },
         temp = temp,
@@ -91,11 +99,15 @@ fun EditTriggersScreen(
                         humidity = viewModel.parseStringToDouble(humidity),
                         temp = viewModel.parseStringToDouble(temp),
                         windSpeed = viewModel.parseStringToDouble(windSpeed),
+                        units = unitsSelectedOptions,
                     ),
                     fromRouteCopy = fromRoute,
                 )
             )
         },
+        unitsOptions = unitsOptions,
+        unitsSelectedOptions = unitsSelectedOptions,
+        unitsOnOptionSelected = { unitsSelectedOptions = it },
         doneOnClick = {
             if (viewModel.verify(binding, name, temp, windSpeed, humidity, pressure)) {
                 when (fromRoute == TriggerDetailsScreenDestination.route) {
@@ -105,6 +117,7 @@ fun EditTriggersScreen(
                             humidity = viewModel.parseStringToDouble(humidity),
                             temp = viewModel.parseStringToDouble(temp),
                             windSpeed = viewModel.parseStringToDouble(windSpeed),
+                            units = unitsSelectedOptions,
                         ),
                     )
 
@@ -114,10 +127,11 @@ fun EditTriggersScreen(
                             humidity = viewModel.parseStringToDouble(humidity),
                             temp = viewModel.parseStringToDouble(temp),
                             windSpeed = viewModel.parseStringToDouble(windSpeed),
+                            units = unitsSelectedOptions,
                         )
                     )
                 }
-                navigator.popBackStack(MainScreenDestination.route, false)
+                navigator.navigateUp()
             } else {
                 Toast.makeText(
                     context,
@@ -154,7 +168,11 @@ fun EditTriggersContent(
     titleAppBar: String,
     bindingValue: String,
     bindingOnClick: () -> Unit,
+    unitsOptions: List<Units>,
+    unitsSelectedOptions: Units,
+    unitsOnOptionSelected: (Units) -> Unit,
 ) {
+    val localeFocusManager = LocalFocusManager.current
     Scaffold(topBar = {
         EditTriggersAppBar(
             title = titleAppBar,
@@ -182,6 +200,7 @@ fun EditTriggersContent(
                 onValueChange = nameOnChange,
                 placeholder = { Text(text = stringResource(R.string.name)) },
                 keyboardType = KeyboardType.Text,
+                onDone = { localeFocusManager.moveFocus(FocusDirection.Down) },
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth(),
@@ -191,6 +210,7 @@ fun EditTriggersContent(
                 onValueChange = tempOnChange,
                 placeholder = { Text(text = stringResource(id = R.string.temperature)) },
                 supportingText = { Text(text = stringResource(R.string.optional)) },
+                onDone = { localeFocusManager.moveFocus(FocusDirection.Down) },
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth(),
@@ -201,6 +221,7 @@ fun EditTriggersContent(
                 onValueChange = windSpeedOnChange,
                 placeholder = { Text(text = stringResource(id = R.string.wind_speed)) },
                 supportingText = { Text(text = stringResource(R.string.optional)) },
+                onDone = { localeFocusManager.moveFocus(FocusDirection.Down) },
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth()
@@ -210,6 +231,7 @@ fun EditTriggersContent(
                 onValueChange = humidityOnChange,
                 placeholder = { Text(text = stringResource(id = R.string.humidity)) },
                 supportingText = { Text(text = stringResource(R.string.optional)) },
+                onDone = { localeFocusManager.moveFocus(FocusDirection.Down) },
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth()
@@ -219,9 +241,18 @@ fun EditTriggersContent(
                 onValueChange = pressureOnChange,
                 placeholder = { Text(text = stringResource(id = R.string.pressure)) },
                 supportingText = { Text(text = stringResource(R.string.optional)) },
+                onDone = { localeFocusManager.clearFocus() },
                 modifier = Modifier
                     .padding(top = 12.dp)
                     .fillMaxWidth()
+            )
+            UnitsSettings(
+                modifier = Modifier
+                    .padding(top = 12.dp)
+                    .fillMaxWidth(),
+                unitsOptions = unitsOptions,
+                unitsSelectedOptions = unitsSelectedOptions,
+                unitsOnOptionSelected = unitsOnOptionSelected
             )
             Button(
                 onClick = doneOnClick, modifier = Modifier
@@ -266,6 +297,7 @@ fun EditItem(
     placeholder: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Number,
     supportingText: @Composable (() -> Unit)? = null,
+    onDone: (() -> Unit)? = null,
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         OutlinedTextField(
@@ -273,7 +305,17 @@ fun EditItem(
             onValueChange = onValueChange,
             label = placeholder,
             singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = keyboardType,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    if (onDone != null) {
+                        onDone()
+                    }
+                }
+            ),
             modifier = Modifier.weight(1f),
             supportingText = supportingText,
         )

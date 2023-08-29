@@ -15,6 +15,6 @@ fun RootNavHost(
     DestinationsNavHost(
         navGraph = NavGraphs.root,
         navController = navController,
-        modifier = modifier
+        modifier = modifier,
     )
 }

@@ -23,10 +23,10 @@ class App : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         val workRequest =
-            PeriodicWorkRequestBuilder<TriggersWorker>(Duration.ofMinutes(20)).build()
+            PeriodicWorkRequestBuilder<TriggersWorker>(Duration.ofMinutes(1)).build()
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             TriggersWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             workRequest
         )
     }

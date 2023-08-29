@@ -2,7 +2,6 @@ package com.example.dsr_practice.domain.mapper.settings
 
 import com.example.dsr_practice.domain.model.settings.ThemeState
 import com.example.dsr_practice.domain.model.settings.Units
-import java.util.Locale
 
 fun String.toThemeState():ThemeState = when (this) {
     ThemeState.Dark.route -> ThemeState.Dark
@@ -15,4 +14,8 @@ fun String.toUnits():Units = when (this) {
     else -> Units.Metric
 }
 
-fun String.toLocale(): Locale = Locale(this)
+fun String?.toUnitsOrNull():Units? = when (this) {
+    Units.Imperial.value -> Units.Imperial
+    Units.Metric.value -> Units.Metric
+    else -> null
+}

@@ -44,6 +44,7 @@ import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.ui.composables.DeleteDialog
+import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.example.dsr_practice.utils.generateIconUrl
 import com.example.dsr_practice.utils.secToTime
 import com.example.dsr_practice.utils.toTempString
@@ -62,7 +63,11 @@ fun DetailsScreen(
     val units by viewModel.currentUnits.collectAsState()
     val currentLocale = LocalConfiguration.current.locales[0]
     DetailsScreenContent(weather = weather,
-        navigationIconOnClick = { navigator.navigateUp() },
+        navigationIconOnClick = { navigator.navigate(MainScreenDestination.route){
+            popUpTo(MainScreenDestination.route){
+                inclusive=true
+            }
+        } },
         units = units,
         locale = currentLocale,
         actionIconOnClick = {
