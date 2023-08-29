@@ -12,6 +12,7 @@ import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.util.Locale
 
@@ -33,8 +34,7 @@ class WeatherRepositoryImpl(
             try {
                 val unit = prefHelper.observeUnit().first().value
                 val locales = AppCompatDelegate.getApplicationLocales()
-
-                val locale = locales[0]?: Locale.ENGLISH
+                val locale = locales[0] ?: Locale.ENGLISH
                 api.getWeatherByCoord(
                     lat = weatherEntity.lat.toString(),
                     lon = weatherEntity.lon.toString(),
@@ -67,4 +67,18 @@ class WeatherRepositoryImpl(
 
     override suspend fun addWeather(weather: Weather) = weatherDao.addWeather(weather.toEntity())
     override suspend fun deleteWeatherById(id: Int) = weatherDao.deleteWeatherById(id)
+    override suspend fun forecastById(id: Int): Flow<Weather> = flow {
+        try {
+            val weather = weatherDao.fetchById(id).map(WeatherEntity::toDomain).first()
+            val response = api.getWeatherByCoord(weather.lat.toString(), weather.lon.toString())
+            if (response.isSuccessful) {
+                response.body()?.let { dto ->
+                    emit(dto.toDomain())
+                }
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+
+    }
 }

@@ -11,4 +11,5 @@ interface WeatherRepository {
     suspend fun updateWeather(weather: Weather)
     suspend fun addWeather(weather: Weather)
     suspend fun deleteWeatherById(id: Int)
+    suspend fun forecastById(id: Int): Flow<Weather>
 }

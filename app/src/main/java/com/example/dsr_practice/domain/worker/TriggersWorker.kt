@@ -1,4 +1,4 @@
-package com.example.dsr_practice.domain
+package com.example.dsr_practice.domain.worker
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -14,13 +14,19 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.dsr_practice.R
+import com.example.dsr_practice.domain.repository.TriggersRepository
+import com.example.dsr_practice.domain.repository.WeatherRepository
 import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
 import com.example.dsr_practice.ui.main_activity.MainActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.first
+import kotlin.math.floor
 
 @HiltWorker
 class TriggersWorker @AssistedInject constructor(
+    val weatherRepository: WeatherRepository,
+    val triggersRepository: TriggersRepository,
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams) {
@@ -28,29 +34,57 @@ class TriggersWorker @AssistedInject constructor(
         createNotificationChannel()
     }
 
+
     @SuppressLint("MissingPermission")
-    private fun notification(triggerId:String) {
+    private fun notification(triggerId: Int) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        intent.putExtra(START_SCREEN_KEY,DetailsScreenDestination.route)
-        intent.putExtra(DETAILS_ID_KEY,DetailsScreenDestination.route)
+        intent.putExtra(START_SCREEN_KEY, DetailsScreenDestination.route)
+        intent.putExtra(TRIGGER_ID_KEY, triggerId)
         val pendingIntent =
             PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("")
-            .setContentText("")
+            .setContentTitle(applicationContext.getString(R.string.trigger))
+            .setContentText(applicationContext.getString(R.string.click_here_for_details))
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         with(NotificationManagerCompat.from(applicationContext)) {
-            notify(123, builder.build())
+            this.areNotificationsEnabled()
+            notify(NOTIFY_ID, builder.build())
         }
     }
 
     override suspend fun doWork(): Result {
-        notification("1")
+        try {
+            val triggers = triggersRepository.fetchTriggers().first()
+            triggers.forEach { trigger ->
+                weatherRepository.forecastById(trigger.locationId).first().let { response ->
+                    when {
+                        floor(response.currentTemp) == trigger.temp -> notification(trigger.id)
+
+                        floor(response.daily.first().windSpeed) == trigger.windSpeed -> notification(
+                            trigger.id
+                        )
+
+                        floor(response.daily.first().humidity) == trigger.humidity -> notification(
+                            trigger.id
+                        )
+
+                        floor(response.daily.first().pressure) == trigger.pressure -> notification(
+                            trigger.id
+                        )
+                    }
+                }
+
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            Result.failure()
+        }
+
         return Result.success()
     }
 
@@ -59,19 +93,19 @@ class TriggersWorker @AssistedInject constructor(
             val name = CHANNEL_NAME
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, name, importance)
-            val notificationManager: NotificationManager =
-                getSystemService(
-                    applicationContext,
-                    NotificationManager::class.java
-                ) as NotificationManager
+            val notificationManager: NotificationManager = getSystemService(
+                applicationContext, NotificationManager::class.java
+            ) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
 
     companion object {
+        const val WORK_NAME = "triggers_work"
         private const val CHANNEL_NAME = "channel"
         private const val CHANNEL_ID = "channel_id"
+        private const val NOTIFY_ID = 1234
         private const val START_SCREEN_KEY = "start_key"
-        private const val DETAILS_ID_KEY = "details_id"
+        private const val TRIGGER_ID_KEY = "details_id"
     }
 }

@@ -17,18 +17,21 @@ import com.google.maps.GeoApiContext
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
     @Provides
+    @Singleton
     fun provideUserRepository(
         userPrefHelper: UserPrefHelper,
     ): UserRepository = UserRepositoryImpl(userPrefHelper)
 
     @Provides
+    @Singleton
     fun provideWeatherRepository(
         api: WeatherApi,
         dao: WeatherDao,
@@ -36,12 +39,14 @@ object RepositoryModule {
     ): WeatherRepository = WeatherRepositoryImpl(dao, api, userPrefHelper)
 
     @Provides
+    @Singleton
     fun providePlacesRepository(
         api: PlacesApi,
         geoApiContext: GeoApiContext
     ): PlaceRepository = PlaceRepositoryImpl(api, geoApiContext)
 
     @Provides
+    @Singleton
     fun provideTriggersRepository(
         dao: TriggersDao,
     ): TriggersRepository = TriggersRepositoryImpl(dao)

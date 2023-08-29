@@ -36,7 +36,7 @@
     <string name="imperial">Имперская</string>
     <string name="language">Язык</string>
     <string name="temperature">температура</string>
-    <string name="name">Название</string>
+    <string name="name">название</string>
     <string name="delete_trigger">Удалить триггер</string>
     <string name="apply">Применить</string>
     <string name="edit_trigger">Изменить триггер</string>
@@ -45,4 +45,8 @@
     <string name="choose_locale">Выберете локацию</string>
     <string name="optional">опционально</string>
     <string name="check_fields_corrections">Проверьте корректность полей</string>
+    <string name="trigger">Триггер</string>
+    <string name="click_here_for_details">Нажми сюда для подробностей</string>
+    <string name="you_don_t_have_any_triggers">У вас нет триггеров</string>
+    <string name="turn_on_notifications">Включите уведомления.\nВы можете сделать это в настройках.</string>
 </resources>

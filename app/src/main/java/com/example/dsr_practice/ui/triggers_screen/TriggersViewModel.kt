@@ -1,5 +1,7 @@
 package com.example.dsr_practice.ui.triggers_screen
 
+import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dsr_practice.domain.model.Trigger
@@ -22,9 +24,13 @@ class TriggersViewModel @Inject constructor(private val triggersRepository: Trig
 
     private fun fetchTriggers() {
         viewModelScope.launch {
-            triggersRepository.fetchTriggers().collect{
+            triggersRepository.fetchTriggers().collect {
                 _triggers.value = it
             }
         }
     }
+
+    fun checkNotificationsEnabled(context: Context) =
+        NotificationManagerCompat.from(context).areNotificationsEnabled()
+
 }

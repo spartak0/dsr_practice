@@ -1,6 +1,8 @@
 package com.example.dsr_practice.ui.triggers_screen
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,12 +33,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
+import com.example.dsr_practice.ui.location_screen.view_pager.EmptyContent
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 
@@ -50,12 +54,20 @@ fun TriggersScreen(
     viewModel: TriggersViewModel = hiltViewModel()
 ) {
     val triggers by viewModel.triggers.collectAsState()
+    val context = LocalContext.current
     TriggersScreenContent(
         list = triggers,
         itemOnClick = { trigger ->
             navigateToDetails(trigger)
         },
-        floatingActionBtnOnClick = navigateToEdit
+        floatingActionBtnOnClick = {
+            if (viewModel.checkNotificationsEnabled(context)) navigateToEdit()
+            else Toast.makeText(
+                context,
+                context.getString(R.string.turn_on_notifications),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     )
     BackHandler {
         navigateUp()
@@ -77,18 +89,25 @@ fun TriggersScreenContent(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)
+        Crossfade(
+            targetState = list.isEmpty(),
+            label = "",
+            modifier = Modifier.padding(paddingValues)
         ) {
-            TriggersList(
-                list = list,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize(),
-                itemOnClick = itemOnClick,
-            )
+            when (it) {
+                true -> EmptyContent(
+                    text = stringResource(R.string.you_don_t_have_any_triggers),
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                false -> TriggersList(
+                    list = list,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize(),
+                    itemOnClick = itemOnClick,
+                )
+            }
         }
     }
 }
@@ -143,6 +162,7 @@ fun TriggerListItem(
         )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

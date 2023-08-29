@@ -44,4 +44,8 @@
     <string name="choose_locale">Choose locale</string>
     <string name="optional">optional</string>
     <string name="check_fields_corrections">Check fields corrections</string>
+    <string name="trigger">Trigger</string>
+    <string name="click_here_for_details">Click here for details</string>
+    <string name="you_don_t_have_any_triggers">You don\'t have any triggers</string>
+    <string name="turn_on_notifications">Turn on notifications.\nYou can do it in settings.</string>
 </resources>

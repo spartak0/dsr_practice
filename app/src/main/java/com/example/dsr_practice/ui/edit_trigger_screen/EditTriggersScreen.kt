@@ -1,6 +1,8 @@
 package com.example.dsr_practice.ui.edit_trigger_screen
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,6 +49,7 @@ import com.example.dsr_practice.utils.toIntString
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Destination
 @Composable
 fun EditTriggersScreen(
@@ -122,6 +125,7 @@ fun EditTriggersScreen(
                 ).show()
             }
         })
+
     AnimatedVisibility(visible = dialog) {
         DeleteDialog(title = stringResource(R.string.delete_trigger),
             onDismiss = { dialog = false },

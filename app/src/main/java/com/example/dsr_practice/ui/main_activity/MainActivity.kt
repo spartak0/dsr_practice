@@ -9,24 +9,16 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.example.dsr_practice.domain.TriggersWorker
 import com.example.dsr_practice.domain.model.settings.ThemeState
 import com.example.dsr_practice.ui.navigation.graphs.RootNavHost
 import com.example.dsr_practice.ui.theme.DsrPracticeTheme
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Duration
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val workRequest =
-            PeriodicWorkRequestBuilder<TriggersWorker>(Duration.ofMinutes(15)).build()
-        WorkManager.getInstance(applicationContext).enqueue(workRequest)
 
         setContent {
             val viewModel: MainActivityViewModel = hiltViewModel()
