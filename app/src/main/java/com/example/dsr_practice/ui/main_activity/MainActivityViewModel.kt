@@ -13,14 +13,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(private val userRepository: UserRepository) :
-    ViewModel() {
+class MainActivityViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+) : ViewModel() {
+
     private val _useDarkTheme = MutableStateFlow<ThemeState>(ThemeState.System)
     val useDarkTheme = _useDarkTheme.asStateFlow()
 
     init {
         fetchThemeSettings()
     }
+
     private fun fetchThemeSettings() {
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.observeThemeState().collectLatest { themeState ->

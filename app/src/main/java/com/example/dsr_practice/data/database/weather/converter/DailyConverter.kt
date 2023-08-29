@@ -1,8 +1,8 @@
-package com.example.dsr_practice.data.database.converter
+package com.example.dsr_practice.data.database.weather.converter
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.example.dsr_practice.data.database.entity.DailyEntity
+import com.example.dsr_practice.data.database.weather.entity.DailyEntity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

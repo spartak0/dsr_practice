@@ -49,7 +49,6 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -76,15 +75,15 @@ fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltVi
         cameraPositionState = cameraPositionState,
         permissionsDismiss = { navigator.navigateUp() },
         currentLocationOnClick = {
-            scope.launch {
-                viewModel.getDeviceLocation(context)
-                delay(100)
-                cameraPositionState.animate(
-                    update = CameraUpdateFactory.newLatLngZoom(
-                        markerState.position,
-                        10f
+            viewModel.getDeviceLocation(context) {
+                scope.launch {
+                    cameraPositionState.animate(
+                        update = CameraUpdateFactory.newLatLngZoom(
+                            markerState.position,
+                            10f
+                        )
                     )
-                )
+                }
             }
         },
         markerState = markerState,

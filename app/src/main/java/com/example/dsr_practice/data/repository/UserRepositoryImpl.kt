@@ -6,7 +6,10 @@ import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.repository.UserRepository
 import kotlinx.coroutines.flow.Flow
 
-class UserRepositoryImpl(private val prefHelper: UserPrefHelper) : UserRepository {
+class UserRepositoryImpl(
+    private val prefHelper: UserPrefHelper,
+) : UserRepository {
+
     override suspend fun setUnit(units: Units) =
         prefHelper.setUnit(units)
 

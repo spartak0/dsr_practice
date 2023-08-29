@@ -19,7 +19,7 @@ sealed class BottomBarScreenModel(
 ) {
     data object LocationScreen : BottomBarScreenModel(
         direction = LocationScreenDestination,
-        label = R.string.location,
+        label = R.string.locations,
         icon = Icons.Default.LocationOn
     )
 

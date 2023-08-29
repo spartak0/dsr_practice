@@ -1,6 +1,5 @@
 package com.example.dsr_practice.ui.location_name_screen
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +14,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +27,7 @@ import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.composables.AppBar
 import com.example.dsr_practice.ui.destinations.DetailsSettingsScreenDestination
+import com.google.maps.model.LatLng
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -39,17 +38,19 @@ fun LocationNameScreen(
     weatherData: Weather,
     viewModel: LocationNameViewModel = hiltViewModel()
 ) {
-    var name by remember { mutableStateOf("") }
+    val name by viewModel.name.collectAsState()
     val context = LocalContext.current
+
 
     LocationNameScreenContent(
         name = name,
-        nameOnChange = { name = it },
+        nameOnChange = { viewModel.setName(it) },
         nextOnClick = {
-            if (!viewModel.validTest(name)) Toast.makeText(
-                context,
-                context.getText(R.string.invalid_name), Toast.LENGTH_SHORT
-            ).show()
+            if (!viewModel.validTest(name))
+                Toast.makeText(
+                    context,
+                    context.getText(R.string.invalid_name), Toast.LENGTH_SHORT
+                ).show()
             else navigator.navigate(
                 DetailsSettingsScreenDestination(
                     weatherData = weatherData.copy(
@@ -59,9 +60,12 @@ fun LocationNameScreen(
             )
         },
         backOnClick = { navigator.navigateUp() })
+    LaunchedEffect(true){
+        viewModel.fetchPlaceName(LatLng(weatherData.lat, weatherData.lon))
+    }
+
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LocationNameScreenContent(
     name: String,
@@ -69,10 +73,11 @@ fun LocationNameScreenContent(
     nextOnClick: () -> Unit,
     backOnClick: () -> Unit
 ) {
-    Scaffold(topBar = { LocationNameAppBar(backOnClick = backOnClick) }) {
+    Scaffold(topBar = { LocationNameAppBar(backOnClick = backOnClick) }) { paddingValue ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValue)
         ) {
             OutlinedTextField(
                 value = name,

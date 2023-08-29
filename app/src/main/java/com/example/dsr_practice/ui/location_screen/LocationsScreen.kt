@@ -1,5 +1,7 @@
 package com.example.dsr_practice.ui.location_screen
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +22,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.view_pager.LocationsViewPager
@@ -41,6 +43,7 @@ fun LocationScreen(navigateToMap: () -> Unit, navigateToDetails: (Weather) -> Un
     )
     val pagerState = rememberPagerState { tabs.size }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     LocationScreenContent(
         tabs = tabs,
         pagerState = pagerState,
@@ -51,6 +54,9 @@ fun LocationScreen(navigateToMap: () -> Unit, navigateToDetails: (Weather) -> Un
         },
         navigateToMap = navigateToMap,
     )
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
 
 }
 
@@ -62,13 +68,16 @@ fun LocationScreenContent(
     tabOnClick: (Int) -> Unit,
     navigateToMap: () -> Unit,
 ) {
-    Scaffold(topBar = {
-        LocationsScreenTopAppBar()
-    }, floatingActionButton = {
-        FloatingActionButton(onClick = { navigateToMap() }) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = null)
-        }
-    }, floatingActionButtonPosition = FabPosition.End
+    Scaffold(
+        topBar = {
+            LocationsScreenTopAppBar()
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navigateToMap() }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = null)
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             LocationsViewPager(

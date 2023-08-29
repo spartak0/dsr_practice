@@ -1,10 +1,10 @@
-package com.example.dsr_practice.data.database.dao
+package com.example.dsr_practice.data.database.weather.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.dsr_practice.data.database.entity.WeatherEntity
+import com.example.dsr_practice.data.database.weather.entity.WeatherEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

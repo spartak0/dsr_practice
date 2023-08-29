@@ -1,6 +1,5 @@
 package com.example.dsr_practice.ui.details_settings_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,6 @@ import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Destination
 @Composable
 fun DetailsSettingsScreen(
@@ -66,7 +64,6 @@ fun DetailsSettingsScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailsSettingsScreenContent(
     backOnClick: () -> Unit,
@@ -75,8 +72,12 @@ fun DetailsSettingsScreenContent(
     onOptionSelected: (ForecastRadioButtonOptions) -> Unit,
     nextOnClick: () -> Unit,
 ) {
-    Scaffold(topBar = { DetailsSettingsAppBar(backOnClick = backOnClick) }) {
-        Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(topBar = { DetailsSettingsAppBar(backOnClick = backOnClick) }) { paddingValue ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValue)
+        ) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.Center,
@@ -90,7 +91,7 @@ fun DetailsSettingsScreenContent(
                 )
                 VerticalRadioButtonGroup(
                     options = options,
-                    optionsTitle = options.map { it.description },
+                    optionsTitle = options.map { stringResource(id = it.description) },
                     selectedOption = selectedOption,
                     onOptionSelected = onOptionSelected,
                 )

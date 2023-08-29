@@ -22,4 +22,26 @@
     <string name="night">Night</string>
     <string name="units">Units</string>
     <string name="theme">Theme</string>
+    <string name="details">Details</string>
+    <string name="without_forecast_for_next_day">without forecast for next day</string>
+    <string name="with_forecast_for_next_day">with forecast for next day</string>
+    <string name="wind_speed">wind speed</string>
+    <string name="humidity">humidity</string>
+    <string name="pressure">pressure</string>
+    <string name="all">All</string>
+    <string name="favorite">Favorite</string>
+    <string name="current_temperature">Current temperature</string>
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
+    <string name="language">Language</string>
+    <string name="temperature">temperature</string>
+    <string name="name">Name</string>
+    <string name="delete_trigger">Delete trigger</string>
+    <string name="apply">APPLY</string>
+    <string name="edit_trigger">Edit trigger</string>
+    <string name="add_trigger">Add trigger</string>
+    <string name="binding">Binding</string>
+    <string name="choose_locale">Choose locale</string>
+    <string name="optional">optional</string>
+    <string name="check_fields_corrections">Check fields corrections</string>
 </resources>

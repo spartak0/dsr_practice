@@ -1,9 +1,9 @@
 package com.example.dsr_practice.ui.details_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,11 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,21 +29,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.dsr_practice.R
-import com.example.dsr_practice.data.network.api.WeatherApi
-import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.model.Weather
+import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.ui.composables.AppBar
-import com.example.dsr_practice.utils.checkUnaryPlus
+import com.example.dsr_practice.ui.composables.DeleteDialog
+import com.example.dsr_practice.utils.generateIconUrl
 import com.example.dsr_practice.utils.secToTime
+import com.example.dsr_practice.utils.toTempString
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.util.Locale
@@ -60,41 +60,32 @@ fun DetailsScreen(
 ) {
     var dialog by remember { mutableStateOf(false) }
     val units by viewModel.currentUnits.collectAsState()
+    val currentLocale = LocalConfiguration.current.locales[0]
     DetailsScreenContent(weather = weather,
         navigationIconOnClick = { navigator.navigateUp() },
         units = units,
+        locale = currentLocale,
         actionIconOnClick = {
             dialog = true
         })
     AnimatedVisibility(visible = dialog) {
-        DeleteDialog(onDismiss = { dialog = false }, onConfirm = {
-            viewModel.deleteWeather(weather.id)
-            navigator.navigateUp()
-        })
+        DeleteDialog(
+            title = stringResource(R.string.delete_location),
+            onDismiss = { dialog = false },
+            onConfirm = {
+                viewModel.deleteWeather(weather.id)
+                navigator.navigateUp()
+            })
     }
 }
 
 @Composable
-fun DeleteDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    AlertDialog(onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.delete_location)) },
-        text = { Text(text = stringResource(R.string.this_action_cannot_be_undone)) },
-        confirmButton = {
-            Button(onClick = onConfirm) {
-                Text(text = stringResource(R.string.delete))
-            }
-        },
-        dismissButton = {
-            OutlinedButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel))
-            }
-        })
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
 fun DetailsScreenContent(
-    weather: Weather, units: Units, navigationIconOnClick: () -> Unit, actionIconOnClick: () -> Unit
+    weather: Weather,
+    units: Units,
+    navigationIconOnClick: () -> Unit,
+    actionIconOnClick: () -> Unit,
+    locale: Locale,
 ) {
     Scaffold(topBar = {
         DetailsAppBar(
@@ -116,31 +107,31 @@ fun DetailsScreenContent(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 currentTemp = weather.currentTemp.toInt(),
                 condition = weather.condition,
-                iconUrl = WeatherApi.generateIconUrl(weather.conditionIcon),
+                iconUrl = generateIconUrl(weather.conditionIcon),
                 units = units,
             )
             DailyContent(
-                date = weather.daily[0].dt.secToTime(Locale.ENGLISH),
-                mornTemp = weather.daily[0].morn.toInt(),
-                dayTemp = weather.daily[0].day.toInt(),
-                eveTemp = weather.daily[0].eve.toInt(),
-                nightTemp = weather.daily[0].night.toInt(),
-                windSpeed = weather.daily[0].windSpeed.toInt(),
-                humidity = weather.daily[0].humidity.toInt(),
-                pressure = weather.daily[0].pressure.toInt(),
+                date = weather.daily.component1().dt.secToTime(locale),
+                mornTemp = weather.daily.component1().morn.toInt(),
+                dayTemp = weather.daily.component1().day.toInt(),
+                eveTemp = weather.daily.component1().eve.toInt(),
+                nightTemp = weather.daily.component1().night.toInt(),
+                windSpeed = weather.daily.component1().windSpeed.toInt(),
+                humidity = weather.daily.component1().humidity.toInt(),
+                pressure = weather.daily.component1().pressure.toInt(),
                 units = units,
             )
             AnimatedVisibility(visible = weather.isSecondDayForecast) {
                 DailyContent(
-                    modifier = Modifier.padding(top = 8.dp),
-                    date = weather.daily[1].dt.secToTime(Locale.ENGLISH),
-                    mornTemp = weather.daily[1].morn.toInt(),
-                    dayTemp = weather.daily[1].day.toInt(),
-                    eveTemp = weather.daily[1].eve.toInt(),
-                    nightTemp = weather.daily[1].night.toInt(),
-                    windSpeed = weather.daily[1].windSpeed.toInt(),
-                    humidity = weather.daily[1].humidity.toInt(),
-                    pressure = weather.daily[1].pressure.toInt(),
+                    modifier = Modifier.padding(top = 32.dp),
+                    date = weather.daily.component2().dt.secToTime(locale),
+                    mornTemp = weather.daily.component2().morn.toInt(),
+                    dayTemp = weather.daily.component2().day.toInt(),
+                    eveTemp = weather.daily.component2().eve.toInt(),
+                    nightTemp = weather.daily.component2().night.toInt(),
+                    windSpeed = weather.daily.component2().windSpeed.toInt(),
+                    humidity = weather.daily.component2().humidity.toInt(),
+                    pressure = weather.daily.component2().pressure.toInt(),
                     units = units,
                 )
 
@@ -160,7 +151,7 @@ fun CurrentContent(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround,
+        horizontalArrangement = Arrangement.Center,
         modifier = modifier,
     ) {
         GlideImage(
@@ -168,13 +159,15 @@ fun CurrentContent(
             contentDescription = null,
             modifier = Modifier.size(150.dp)
         )
-        Column {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = condition,
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.W300),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(IntrinsicSize.Min)
             )
             Text(
-                text = currentTemp.checkUnaryPlus() + units.tempUnit,
+                text = currentTemp.toTempString() + units.tempUnit,
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.W300)
             )
         }
@@ -213,11 +206,17 @@ fun DailyContent(
             nightTemp = nightTemp,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        InfoItem(iconId = R.drawable.wind_icon, text = "wind speed $windSpeed ${units.speedUnit}")
-        InfoItem(iconId = R.drawable.humidity_icon, text = "humidity $humidity%")
+        InfoItem(
+            iconId = R.drawable.wind_icon,
+            text = stringResource(R.string.wind_speed) + " $windSpeed ${units.speedUnit}"
+        )
+        InfoItem(
+            iconId = R.drawable.humidity_icon,
+            text = stringResource(R.string.humidity) + " $humidity%"
+        )
         InfoItem(
             iconId = R.drawable.pressure_icon,
-            text = "pressure $pressure ${units.pressureUnit}"
+            text = stringResource(R.string.pressure) + " $pressure ${units.pressureUnit}"
         )
     }
 }
@@ -273,7 +272,7 @@ fun DailyCard(name: String, iconId: Int, temp: Int) {
             modifier = Modifier.size(48.dp)
         )
         Text(
-            text = temp.checkUnaryPlus(),
+            text = temp.toTempString(),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.W300,
                 fontSize = 18.sp

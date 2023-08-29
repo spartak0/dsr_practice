@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MapViewModel @Inject constructor(val placesRepository: PlaceRepository) : ViewModel() {
+class MapViewModel @Inject constructor(private val placesRepository: PlaceRepository) :
+    ViewModel() {
     private val _markerState = MutableStateFlow(MarkerState(DefaultLatLng.value))
     val markerState = _markerState.asStateFlow()
 
@@ -28,7 +29,7 @@ class MapViewModel @Inject constructor(val placesRepository: PlaceRepository) : 
 
 
     @SuppressLint("MissingPermission")
-    fun getDeviceLocation(context: Context) {
+    fun getDeviceLocation(context: Context, onSuccess: () -> Unit) {
         viewModelScope.launch {
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(context)
@@ -37,6 +38,7 @@ class MapViewModel @Inject constructor(val placesRepository: PlaceRepository) : 
                     val lastKnownLocation = task.result
                     _markerState.value.position =
                         LatLng(lastKnownLocation.latitude, lastKnownLocation.longitude)
+                    onSuccess()
                 }
             }
         }

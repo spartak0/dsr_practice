@@ -2,6 +2,8 @@ package com.example.dsr_practice.di
 
 import com.example.dsr_practice.data.network.api.PlacesApi
 import com.example.dsr_practice.data.network.api.WeatherApi
+import com.example.dsr_practice.utils.Constants
+import com.google.maps.GeoApiContext
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,4 +30,10 @@ object NetworkModule {
     @Singleton
     fun providePlacesApi(retrofit: Retrofit.Builder): PlacesApi =
         retrofit.baseUrl(PlacesApi.BASE_URL).build().create(PlacesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGeoContext(): GeoApiContext = GeoApiContext.Builder()
+        .apiKey(Constants.MAPS_API_KEY)
+        .build()
 }

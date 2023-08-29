@@ -13,6 +13,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -59,7 +60,7 @@ private fun IndicatorLocationsViewPager(
                 onClick = { tabOnClick(index) },
             ) {
                 Text(
-                    text = tab.title,
+                    text = stringResource(id = tab.title),
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )

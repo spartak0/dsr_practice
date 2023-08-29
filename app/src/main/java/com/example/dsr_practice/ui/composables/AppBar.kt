@@ -1,5 +1,6 @@
 package com.example.dsr_practice.ui.composables
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -11,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
     title: String,
@@ -20,6 +20,34 @@ fun AppBar(
     navigationIconOnClick: () -> Unit = {},
     actionIcon: ImageVector? = null,
     actionOnClick: () -> Unit = {},
+) {
+    AppBar(
+        title = title,
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        navigationIconOnClick = navigationIconOnClick,
+        actions = {
+            actionIcon?.let { icon ->
+                IconButton(onClick = actionOnClick) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(
+    title: String,
+    modifier: Modifier = Modifier,
+    navigationIcon: ImageVector? = null,
+    navigationIconOnClick: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         title = {
@@ -39,17 +67,7 @@ fun AppBar(
                 }
             }
         },
-        actions = {
-            actionIcon?.let { icon ->
-                IconButton(onClick = actionOnClick) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-        },
+        actions = actions,
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary
         ),

@@ -10,8 +10,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailsSettingsViewModel @Inject constructor(private val weatherRepository:WeatherRepository) :
-    ViewModel() {
+class DetailsSettingsViewModel @Inject constructor(
+    private val weatherRepository: WeatherRepository,
+) : ViewModel() {
+
     fun addWeatherInDatabase(weather: Weather) {
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.addWeather(weather)

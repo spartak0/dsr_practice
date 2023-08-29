@@ -2,8 +2,9 @@ package com.example.dsr_practice.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.dsr_practice.data.database.converter.DailyConverter
-import com.example.dsr_practice.data.database.db.WeatherDatabase
+import com.example.dsr_practice.data.database.weather.converter.DailyConverter
+import com.example.dsr_practice.data.database.weather.db.WeatherDatabase
+import com.example.dsr_practice.domain.UserPrefHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object WeatherDatabaseModule {
 
     @Provides
     @Singleton
@@ -34,4 +35,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideWeatherDao(weatherDatabase: WeatherDatabase) = weatherDatabase.weatherDao()
+
+    @Provides
+    @Singleton
+    fun provideUserPrefHelper(
+        @ApplicationContext context: Context
+    ): UserPrefHelper = UserPrefHelper(context)
 }

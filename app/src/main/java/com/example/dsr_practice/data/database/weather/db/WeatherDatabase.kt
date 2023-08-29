@@ -1,11 +1,11 @@
-package com.example.dsr_practice.data.database.db
+package com.example.dsr_practice.data.database.weather.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.dsr_practice.data.database.converter.DailyConverter
-import com.example.dsr_practice.data.database.dao.WeatherDao
-import com.example.dsr_practice.data.database.entity.WeatherEntity
+import com.example.dsr_practice.data.database.weather.converter.DailyConverter
+import com.example.dsr_practice.data.database.weather.dao.WeatherDao
+import com.example.dsr_practice.data.database.weather.entity.WeatherEntity
 
 
 @TypeConverters(DailyConverter::class)
@@ -19,6 +19,6 @@ abstract class WeatherDatabase : RoomDatabase() {
 
     companion object {
         const val DATABASE_NAME = "weather_database"
-        const val DATABASE_VERSION = 7
+        const val DATABASE_VERSION = 8
     }
 }

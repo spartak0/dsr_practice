@@ -1,17 +1,19 @@
 package com.example.dsr_practice.data.repository
 
-import com.example.dsr_practice.data.database.dao.WeatherDao
-import com.example.dsr_practice.data.database.entity.WeatherEntity
+import androidx.appcompat.app.AppCompatDelegate
+import com.example.dsr_practice.data.database.weather.dao.WeatherDao
+import com.example.dsr_practice.data.database.weather.entity.WeatherEntity
 import com.example.dsr_practice.data.network.api.WeatherApi
 import com.example.dsr_practice.data.network.dto.DailyWeatherDto
 import com.example.dsr_practice.domain.UserPrefHelper
-import com.example.dsr_practice.domain.mapper.toDomain
-import com.example.dsr_practice.domain.mapper.toEntity
+import com.example.dsr_practice.domain.mapper.weather.toDomain
+import com.example.dsr_practice.domain.mapper.weather.toEntity
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.domain.repository.WeatherRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 
 class WeatherRepositoryImpl(
     private val weatherDao: WeatherDao,
@@ -29,17 +31,21 @@ class WeatherRepositoryImpl(
     override suspend fun syncWeatherData() {
         weatherDao.fetchWeatherList().forEach { weatherEntity ->
             try {
-                val unit = prefHelper.observeUnit().first().title
+                val unit = prefHelper.observeUnit().first().value
+                val locales = AppCompatDelegate.getApplicationLocales()
+
+                val locale = locales[0]?: Locale.ENGLISH
                 api.getWeatherByCoord(
                     lat = weatherEntity.lat.toString(),
                     lon = weatherEntity.lon.toString(),
-                    units = unit
+                    units = unit,
+                    language = locale.language
                 ).body()?.let { weatherDto ->
                     val syncWeather = weatherEntity.copy(
-                        currentTemp = weatherDto.current.temp,
-                        condition = weatherDto.current.weather[0].main,
-                        conditionIcon = weatherDto.current.weather[0].icon,
-                        daily = weatherDto.daily.map(DailyWeatherDto::toEntity)
+                        currentTemp = weatherDto.currentWeather.temp,
+                        condition = weatherDto.currentWeather.weatherInfo.component1().condition,
+                        conditionIcon = weatherDto.currentWeather.weatherInfo.component1().conditionIcon,
+                        daily = weatherDto.dailyWeather.map(DailyWeatherDto::toEntity)
                     )
                     weatherDao.updateWeather(syncWeather)
                 }

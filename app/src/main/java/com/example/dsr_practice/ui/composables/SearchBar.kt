@@ -89,6 +89,10 @@ fun SearchBarItem(text: String, modifier: Modifier = Modifier, onClick: () -> Un
         modifier = modifier.clickable(onClick = onClick),
         contentAlignment = Alignment.CenterStart
     ) {
-        Text(text = text, modifier = Modifier.padding(horizontal = 16.dp))
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

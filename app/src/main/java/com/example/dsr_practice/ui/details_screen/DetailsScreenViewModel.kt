@@ -18,7 +18,8 @@ class DetailsScreenViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    private val _currentUnits = MutableStateFlow<Units>(Units.Imperial)
+
+    private val _currentUnits = MutableStateFlow<Units>(Units.Metric)
     val currentUnits = _currentUnits.asStateFlow()
 
     init {
