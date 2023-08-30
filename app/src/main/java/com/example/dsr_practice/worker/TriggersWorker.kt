@@ -1,4 +1,4 @@
-package com.example.dsr_practice.domain.worker
+package com.example.dsr_practice.worker
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -37,18 +37,18 @@ class TriggersWorker @AssistedInject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    private suspend fun notification(placeId: Int) {
+    private suspend fun notification(placeId: Int, title: String, text: String) {
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        userPrefHelper.setTriggerId(placeId)
+        userPrefHelper.setWeatherId(placeId)
         userPrefHelper.setStartRoute(DetailsScreenDestination.route)
         val pendingIntent =
             PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(applicationContext.getString(R.string.trigger))
-            .setContentText(applicationContext.getString(R.string.click_here_for_details))
+            .setContentTitle(title)
+            .setContentText(text)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -63,21 +63,16 @@ class TriggersWorker @AssistedInject constructor(
             val triggers = triggersRepository.fetchTriggers().first()
             triggers.forEach { trigger ->
                 weatherRepository.forecastById(trigger.locationId).first().let { response ->
-                    when {
-                        floor(response.currentTemp) == trigger.temp -> notification(trigger.id)
-
-                        floor(response.daily.first().windSpeed) == trigger.windSpeed -> notification(
-                            trigger.id
-                        )
-
-                        floor(response.daily.first().humidity) == trigger.humidity -> notification(
-                            trigger.id
-                        )
-
-                        floor(response.daily.first().pressure) == trigger.pressure -> notification(
-                            trigger.id
-                        )
-                    }
+                    val checkTemp = floor(response.currentTemp) == trigger.temp
+                    val checkWindSpeed =
+                        floor(response.daily.first().windSpeed) == trigger.windSpeed
+                    val checkHumidity = floor(response.daily.first().humidity) == trigger.humidity
+                    val checkPressure = floor(response.daily.first().pressure) == trigger.pressure
+                    if (checkTemp || checkWindSpeed || checkHumidity || checkPressure) notification(
+                        placeId = trigger.locationId,
+                        title = trigger.name ?: "",
+                        text = applicationContext.getString(R.string.click_here_for_details)
+                    )
                 }
 
             }

@@ -20,7 +20,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USE
 
 class UserPrefHelper(val context: Context) {
 
-    suspend fun setTriggerId(id: Int) = saveData(WEATHER_ID_KEY, id)
+    suspend fun setWeatherId(id: Int) = saveData(WEATHER_ID_KEY, id)
     fun observeWeatherId() = getData().map { prefs ->
         prefs[WEATHER_ID_KEY]?.toInt()
     }

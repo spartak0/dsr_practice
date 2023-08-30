@@ -30,8 +30,8 @@ class MainScreenViewModel @Inject constructor(
     }
     private fun fetchWeather() {
         viewModelScope.launch(Dispatchers.IO) {
-            userPrefHelper.observeWeatherId().collect {
-                it?.let {
+            userPrefHelper.observeWeatherId().collect {weatherId->
+                weatherId?.let {
                     _weather.value = weatherRepository.fetchById(it).first()
                 }
             }

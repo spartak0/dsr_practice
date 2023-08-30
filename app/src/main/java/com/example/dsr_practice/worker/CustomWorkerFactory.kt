@@ -1,4 +1,4 @@
-package com.example.dsr_practice.domain.worker
+package com.example.dsr_practice.worker
 
 import android.content.Context
 import androidx.work.ListenableWorker

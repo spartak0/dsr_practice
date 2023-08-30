@@ -8,7 +8,7 @@ import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.dsr_practice.domain.worker.TriggersWorker
+import com.example.dsr_practice.worker.TriggersWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.time.Duration
 import javax.inject.Inject
