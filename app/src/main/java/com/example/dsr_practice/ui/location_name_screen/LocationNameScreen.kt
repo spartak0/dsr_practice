@@ -1,6 +1,5 @@
 package com.example.dsr_practice.ui.location_name_screen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +13,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,21 +29,25 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
-import com.example.dsr_practice.ui.composables.AppBar
+import com.example.dsr_practice.ui.components.AppBar
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.destinations.DetailsSettingsScreenDestination
 import com.google.maps.model.LatLng
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 
 @Destination
 @Composable
 fun LocationNameScreen(
     navigator: DestinationsNavigator,
     weatherData: Weather,
-    viewModel: LocationNameViewModel = hiltViewModel()
+    viewModel: LocationNameViewModel = hiltViewModel(),
+    snackbarController: SnackbarController,
 ) {
     val name by viewModel.name.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
 
     LocationNameScreenContent(
@@ -50,10 +55,13 @@ fun LocationNameScreen(
         nameOnChange = { viewModel.setName(it) },
         nextOnClick = {
             if (!viewModel.validTest(name))
-                Toast.makeText(
-                    context,
-                    context.getText(R.string.invalid_name), Toast.LENGTH_SHORT
-                ).show()
+                scope.launch {
+                    snackbarController.showSnackbar(
+                        message = context.getString(R.string.invalid_name),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
+                    )
+                }
             else navigator.navigate(
                 DetailsSettingsScreenDestination(
                     weatherData = weatherData.copy(

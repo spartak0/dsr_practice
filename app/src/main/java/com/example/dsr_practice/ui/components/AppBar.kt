@@ -1,4 +1,4 @@
-package com.example.dsr_practice.ui.composables
+package com.example.dsr_practice.ui.components
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api

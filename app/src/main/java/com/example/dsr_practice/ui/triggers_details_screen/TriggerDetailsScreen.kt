@@ -34,8 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
 import com.example.dsr_practice.domain.model.settings.Units
-import com.example.dsr_practice.ui.composables.AppBar
-import com.example.dsr_practice.ui.composables.DeleteDialog
+import com.example.dsr_practice.ui.components.AppBar
+import com.example.dsr_practice.ui.components.DeleteDialog
 import com.example.dsr_practice.ui.destinations.EditTriggersScreenDestination
 import com.example.dsr_practice.ui.destinations.TriggerDetailsScreenDestination
 import com.example.dsr_practice.utils.toIntString

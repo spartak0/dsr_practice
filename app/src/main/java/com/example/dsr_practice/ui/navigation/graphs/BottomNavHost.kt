@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dsr_practice.domain.model.Trigger
 import com.example.dsr_practice.ui.NavGraphs
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
 import com.example.dsr_practice.ui.destinations.EditTriggersScreenDestination
 import com.example.dsr_practice.ui.destinations.LocationScreenDestination
@@ -19,6 +20,7 @@ import com.example.dsr_practice.ui.settings_screen.SettingsScreen
 import com.example.dsr_practice.ui.triggers_screen.TriggersScreen
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
+import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.popUpTo
 
@@ -26,12 +28,14 @@ import com.ramcosta.composedestinations.navigation.popUpTo
 fun BottomNavHost(
     modifier: Modifier = Modifier,
     externalNavController: NavController,
+    snackbarController: SnackbarController,
     navController: NavHostController = rememberNavController(),
 ) {
     DestinationsNavHost(
         navGraph = NavGraphs.bottomNavigation,
         navController = navController,
         modifier = modifier,
+        dependenciesContainerBuilder = { dependency(snackbarController) }
     ) {
         composable(LocationScreenDestination) {
             LocationScreen(
@@ -67,7 +71,8 @@ fun BottomNavHost(
                             fromRoute = TriggersScreenDestination.route
                         )
                     )
-                }
+                },
+                snackbarController = snackbarController
             )
         }
         composable(SettingsScreenDestination) {

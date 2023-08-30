@@ -4,7 +4,7 @@
     <string name="locations">Локации</string>
     <string name="location_name">Название локации</string>
     <string name="next">ДАЛЕЕ</string>
-    <string name="toast_turn_on_tracking">Включите отслеживание геопозиции.\nВы можете сделать это в настройках.</string>
+    <string name="toast_turn_on_tracking">Включите отслеживание геопозиции\nВы можете сделать это в настройках</string>
     <string name="weather_details">Детали</string>
     <string name="location">Локация</string>
     <string name="triggers">Триггеры</string>
@@ -12,7 +12,7 @@
     <string name="show_location_weather">Show location weather</string>
     <string name="invalid_name">Некорректное название</string>
     <string name="delete_location">Удалить локацию?</string>
-    <string name="this_action_cannot_be_undone">Это действие необратимо.</string>
+    <string name="this_action_cannot_be_undone">Это действие необратимо</string>
     <string name="delete">Удалить</string>
     <string name="cancel">Отмена</string>
     <string name="empty_locations">У вас нет добавленных локаций</string>
@@ -48,5 +48,9 @@
     <string name="trigger">Триггер</string>
     <string name="click_here_for_details">Нажми сюда для подробностей</string>
     <string name="you_don_t_have_any_triggers">У вас нет триггеров</string>
-    <string name="turn_on_notifications">Включите уведомления.\nВы можете сделать это в настройках.</string>
+    <string name="turn_on_notifications">Включите уведомления\nВы можете сделать это в настройках</string>
+    <string name="your_not_bind_to_location">Вы не привязали локацию</string>
+    <string name="incorrect_name">Некорректное имя</string>
+    <string name="fill_in_one_of_the_optional_fields">Заполните хотя бы одно опциональное поле</string>
+    <string name="choose_location">Выберите локацию</string>
 </resources>

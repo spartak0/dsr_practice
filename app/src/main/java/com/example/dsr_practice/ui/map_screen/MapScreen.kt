@@ -2,7 +2,6 @@ package com.example.dsr_practice.ui.map_screen
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -31,10 +31,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Place
 import com.example.dsr_practice.domain.model.Weather
-import com.example.dsr_practice.ui.composables.SearchBar
+import com.example.dsr_practice.ui.components.SearchBar
 import com.example.dsr_practice.ui.destinations.LocationNameScreenDestination
 import com.example.dsr_practice.utils.Constants
 import com.example.dsr_practice.utils.DefaultLatLng
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.utils.isDefault
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -54,7 +55,11 @@ import kotlinx.coroutines.launch
 
 @Destination
 @Composable
-fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltViewModel()) {
+fun MapScreen(
+    navigator: DestinationsNavigator,
+    viewModel: MapViewModel = hiltViewModel(),
+    snackbarController: SnackbarController,
+) {
     val moscow = LatLng(Constants.MOSCOW_LATITUDE, Constants.MOSCOW_LONGITUDE)
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(moscow, 10f)
@@ -73,7 +78,16 @@ fun MapScreen(navigator: DestinationsNavigator, viewModel: MapViewModel = hiltVi
             viewModel.fetchPlaces(it)
         },
         cameraPositionState = cameraPositionState,
-        permissionsDismiss = { navigator.navigateUp() },
+        permissionsDismiss = {
+            navigator.navigateUp()
+            scope.launch {
+                snackbarController.showSnackbar(
+                    message = context.getString(R.string.turn_on_notifications),
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short,
+                )
+            }
+        },
         currentLocationOnClick = {
             viewModel.getDeviceLocation(context) {
                 scope.launch {
@@ -189,7 +203,6 @@ fun MapContent(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapPermissions(onDismiss: () -> Unit) {
-    val context = LocalContext.current
     val permissions = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -198,11 +211,6 @@ fun MapPermissions(onDismiss: () -> Unit) {
     ) {
         if (it[Manifest.permission.ACCESS_COARSE_LOCATION] == false) {
             onDismiss()
-            Toast.makeText(
-                context,
-                context.getText(R.string.toast_turn_on_tracking),
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
     SideEffect {

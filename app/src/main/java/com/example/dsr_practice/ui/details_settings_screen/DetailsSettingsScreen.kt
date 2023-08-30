@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
-import com.example.dsr_practice.ui.composables.AppBar
-import com.example.dsr_practice.ui.composables.VerticalRadioButtonGroup
+import com.example.dsr_practice.ui.components.AppBar
+import com.example.dsr_practice.ui.components.VerticalRadioButtonGroup
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

@@ -1,6 +1,5 @@
 package com.example.dsr_practice.ui.triggers_screen
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
@@ -24,12 +23,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.location_screen.view_pager.EmptyContent
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
+import kotlinx.coroutines.launch
 
 @BottomNavGraph
 @Destination
@@ -51,8 +54,10 @@ fun TriggersScreen(
     navigateToDetails: (Trigger) -> Unit,
     navigateToEdit: () -> Unit,
     navigateUp: () -> Unit,
-    viewModel: TriggersViewModel = hiltViewModel()
+    viewModel: TriggersViewModel = hiltViewModel(),
+    snackbarController: SnackbarController,
 ) {
+    val scope = rememberCoroutineScope()
     val triggers by viewModel.triggers.collectAsState()
     val context = LocalContext.current
     TriggersScreenContent(
@@ -62,11 +67,13 @@ fun TriggersScreen(
         },
         floatingActionBtnOnClick = {
             if (viewModel.checkNotificationsEnabled(context)) navigateToEdit()
-            else Toast.makeText(
-                context,
-                context.getString(R.string.turn_on_notifications),
-                Toast.LENGTH_SHORT
-            ).show()
+            else scope.launch {
+                snackbarController.showSnackbar(
+                    message = context.getString(R.string.turn_on_notifications),
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short,
+                )
+            }
         }
     )
     BackHandler {

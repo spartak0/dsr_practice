@@ -42,8 +42,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.domain.model.settings.Units
-import com.example.dsr_practice.ui.composables.AppBar
-import com.example.dsr_practice.ui.composables.DeleteDialog
+import com.example.dsr_practice.ui.components.AppBar
+import com.example.dsr_practice.ui.components.DeleteDialog
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.example.dsr_practice.utils.generateIconUrl
 import com.example.dsr_practice.utils.secToTime

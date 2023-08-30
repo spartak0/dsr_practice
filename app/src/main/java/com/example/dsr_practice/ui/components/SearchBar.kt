@@ -1,4 +1,4 @@
-package com.example.dsr_practice.ui.composables
+package com.example.dsr_practice.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

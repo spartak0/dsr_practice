@@ -42,7 +42,7 @@ import com.example.dsr_practice.domain.model.settings.ThemeState
 import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.model.settings.Units.Imperial
 import com.example.dsr_practice.domain.model.settings.Units.Metric
-import com.example.dsr_practice.ui.composables.VerticalRadioButtonGroup
+import com.example.dsr_practice.ui.components.VerticalRadioButtonGroup
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
 

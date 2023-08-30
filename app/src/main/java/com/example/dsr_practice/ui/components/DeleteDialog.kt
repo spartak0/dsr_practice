@@ -1,4 +1,4 @@
-package com.example.dsr_practice.ui.composables
+package com.example.dsr_practice.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button

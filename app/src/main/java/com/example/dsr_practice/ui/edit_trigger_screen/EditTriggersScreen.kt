@@ -1,12 +1,12 @@
 package com.example.dsr_practice.ui.edit_trigger_screen
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,11 +23,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -45,8 +47,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
 import com.example.dsr_practice.domain.model.settings.Units
-import com.example.dsr_practice.ui.composables.AppBar
-import com.example.dsr_practice.ui.composables.DeleteDialog
+import com.example.dsr_practice.ui.components.AppBar
+import com.example.dsr_practice.ui.components.DeleteDialog
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.destinations.ChooseBindingLocaleScreenDestination
 import com.example.dsr_practice.ui.destinations.MainScreenDestination
 import com.example.dsr_practice.ui.destinations.TriggerDetailsScreenDestination
@@ -54,6 +57,7 @@ import com.example.dsr_practice.ui.settings_screen.UnitsSettings
 import com.example.dsr_practice.utils.toIntString
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Destination
@@ -62,7 +66,8 @@ fun EditTriggersScreen(
     trigger: Trigger,
     navigator: DestinationsNavigator,
     fromRoute: String,
-    viewModel: EditTriggersViewModel = hiltViewModel()
+    snackbarController: SnackbarController,
+    viewModel: EditTriggersViewModel = hiltViewModel(),
 ) {
     var name by remember { mutableStateOf(trigger.name ?: "") }
     var temp by remember { mutableStateOf(trigger.temp?.toIntString() ?: "") }
@@ -71,9 +76,11 @@ fun EditTriggersScreen(
     var pressure by remember { mutableStateOf(trigger.pressure?.toIntString() ?: "") }
     var dialog by remember { mutableStateOf(false) }
     val binding = trigger.locationName ?: ""
-    val context = LocalContext.current
     val unitsOptions = listOf(Units.Metric, Units.Imperial)
     var unitsSelectedOptions by remember { mutableStateOf(trigger.units ?: Units.Metric) }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val navigateFromDetails = fromRoute == TriggerDetailsScreenDestination.route
     EditTriggersContent(name = name,
         nameOnChange = { name = it },
         temp = temp,
@@ -109,34 +116,41 @@ fun EditTriggersScreen(
         unitsSelectedOptions = unitsSelectedOptions,
         unitsOnOptionSelected = { unitsSelectedOptions = it },
         doneOnClick = {
-            if (viewModel.verify(binding, name, temp, windSpeed, humidity, pressure)) {
-                when (fromRoute == TriggerDetailsScreenDestination.route) {
-                    true -> viewModel.updateTrigger(
-                        trigger.copy(
-                            name = name,
-                            humidity = viewModel.parseStringToDouble(humidity),
-                            temp = viewModel.parseStringToDouble(temp),
-                            windSpeed = viewModel.parseStringToDouble(windSpeed),
-                            units = unitsSelectedOptions,
-                        ),
-                    )
-
-                    false -> viewModel.addTrigger(
-                        trigger.copy(
-                            name = name,
-                            humidity = viewModel.parseStringToDouble(humidity),
-                            temp = viewModel.parseStringToDouble(temp),
-                            windSpeed = viewModel.parseStringToDouble(windSpeed),
-                            units = unitsSelectedOptions,
-                        )
+            val verifyResult: VerifyResult =
+                viewModel.verify(binding, name, temp, windSpeed, humidity, pressure)
+            val changedTrigger = trigger.copy(
+                name = name,
+                humidity = viewModel.parseStringToDouble(humidity),
+                temp = viewModel.parseStringToDouble(temp),
+                windSpeed = viewModel.parseStringToDouble(windSpeed),
+                units = unitsSelectedOptions,
+            )
+            when {
+                verifyResult is VerifyResult.Error -> scope.launch {
+                    snackbarController.showSnackbar(
+                        message = context.getString(verifyResult.messageId!!),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short,
                     )
                 }
-                navigator.navigateUp()
-            } else {
-                Toast.makeText(
-                    context,
-                    context.getText(R.string.check_fields_corrections), Toast.LENGTH_SHORT
-                ).show()
+
+                (verifyResult is VerifyResult.Success) && navigateFromDetails -> {
+                    viewModel.updateTrigger(changedTrigger)
+                    navigator.navigate(TriggerDetailsScreenDestination(trigger = changedTrigger)) {
+                        popUpTo(TriggerDetailsScreenDestination.route) {
+                            inclusive = true
+                        }
+                    }
+                }
+
+                (verifyResult is VerifyResult.Success) && !navigateFromDetails -> {
+                    viewModel.addTrigger(changedTrigger)
+                    navigator.navigate(TriggerDetailsScreenDestination(trigger = changedTrigger)) {
+                        popUpTo(MainScreenDestination.route) {
+                            inclusive = false
+                        }
+                    }
+                }
             }
         })
 
@@ -173,14 +187,16 @@ fun EditTriggersContent(
     unitsOnOptionSelected: (Units) -> Unit,
 ) {
     val localeFocusManager = LocalFocusManager.current
-    Scaffold(topBar = {
-        EditTriggersAppBar(
-            title = titleAppBar,
-            modifier = Modifier.fillMaxWidth(),
-            navigationIconOnClick = navigationIconOnClick,
-            deleteOnClick = deleteOnClick,
-        )
-    }) { paddingValues ->
+    Scaffold(
+        topBar = {
+            EditTriggersAppBar(
+                title = titleAppBar,
+                modifier = Modifier.fillMaxWidth(),
+                navigationIconOnClick = navigationIconOnClick,
+                deleteOnClick = deleteOnClick,
+            )
+        },
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -261,6 +277,7 @@ fun EditTriggersContent(
             ) {
                 Text(text = stringResource(R.string.apply))
             }
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 

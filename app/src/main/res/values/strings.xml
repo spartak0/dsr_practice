@@ -3,7 +3,7 @@
     <string name="locations">Locations</string>
     <string name="location_name">Location name</string>
     <string name="next">NEXT</string>
-    <string name="toast_turn_on_tracking">Turn on tracking.\nYou can do it in settings.</string>
+    <string name="toast_turn_on_tracking">Turn on tracking\nYou can do it in settings</string>
     <string name="weather_details">Weather details</string>
     <string name="location">Location</string>
     <string name="triggers">Triggers</string>
@@ -11,7 +11,7 @@
     <string name="show_location_weather">Show location weather</string>
     <string name="invalid_name">Invalid name</string>
     <string name="delete_location">Delete location?</string>
-    <string name="this_action_cannot_be_undone">This action cannot be undone.</string>
+    <string name="this_action_cannot_be_undone">This action cannot be undone</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="empty_locations">You don\'t have any added locations</string>
@@ -47,5 +47,9 @@
     <string name="trigger">Trigger</string>
     <string name="click_here_for_details">Click here for details</string>
     <string name="you_don_t_have_any_triggers">You don\'t have any triggers</string>
-    <string name="turn_on_notifications">Turn on notifications.\nYou can do it in settings.</string>
+    <string name="turn_on_notifications">Turn on notifications\nYou can do it in settings</string>
+    <string name="your_not_bind_to_location">Your not bind to location</string>
+    <string name="incorrect_name">Incorrect name</string>
+    <string name="fill_in_one_of_the_optional_fields">Fill in one of the optional fields</string>
+    <string name="choose_location">Choose location</string>
 </resources>

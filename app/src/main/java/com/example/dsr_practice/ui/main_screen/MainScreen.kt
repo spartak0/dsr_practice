@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.NavGraphs
 import com.example.dsr_practice.ui.appCurrentDestinationAsState
+import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.destinations.Destination
 import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavHost
@@ -34,6 +35,7 @@ import com.ramcosta.composedestinations.navigation.navigate
 fun MainScreen(
     externalNavController: NavController,
     navigator: DestinationsNavigator,
+    snackbarController: SnackbarController,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -43,6 +45,7 @@ fun MainScreen(
         navController = navController,
         externalNavController = externalNavController,
         bottomBarItems = BottomBarScreenModel.bottomBarScreensList,
+        snackbarController = snackbarController,
     )
     LaunchedEffect(key1 = true) {
         if (startDestination == DetailsScreenDestination.route) {
@@ -54,6 +57,7 @@ fun MainScreen(
 
 @Composable
 fun MainScreenContent(
+    snackbarController: SnackbarController,
     navController: NavHostController,
     externalNavController: NavController,
     bottomBarItems: List<BottomBarScreenModel>
@@ -64,7 +68,8 @@ fun MainScreenContent(
         BottomNavHost(
             navController = navController,
             externalNavController = externalNavController,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            snackbarController = snackbarController,
         )
     }
 }
