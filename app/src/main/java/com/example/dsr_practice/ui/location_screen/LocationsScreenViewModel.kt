@@ -6,6 +6,7 @@ import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.repository.UserRepository
 import com.example.dsr_practice.domain.repository.WeatherRepository
+import com.example.dsr_practice.utils.NetworkConnectionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class LocationsScreenViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository,
     private val userRepository: UserRepository,
+    private val networkConnectionManager: NetworkConnectionManager,
 ) : ViewModel() {
 
     private val _weather = MutableStateFlow<List<Weather>>(listOf())
@@ -76,6 +78,8 @@ class LocationsScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun checkInternetConnection() = networkConnectionManager.isNetworkConnected
 
 
     fun onRefresh() {

@@ -1,7 +1,9 @@
 package com.example.dsr_practice.ui.triggers_screen
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,29 +26,32 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Trigger
-import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.location_screen.view_pager.EmptyContent
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
 import com.ramcosta.composedestinations.annotation.Destination
-import kotlinx.coroutines.launch
 
 @BottomNavGraph
 @Destination
@@ -55,27 +61,37 @@ fun TriggersScreen(
     navigateToEdit: () -> Unit,
     navigateUp: () -> Unit,
     viewModel: TriggersViewModel = hiltViewModel(),
-    snackbarController: SnackbarController,
 ) {
-    val scope = rememberCoroutineScope()
     val triggers by viewModel.triggers.collectAsState()
+    val networkConnection by viewModel.networkConnection.collectAsState()
     val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val latestLifecycleEvent = remember { mutableStateOf(Lifecycle.Event.ON_ANY) }
+    val notifyAvailable by viewModel.notifyAvailable.collectAsState()
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            latestLifecycleEvent.value = event
+        }
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
     TriggersScreenContent(
         list = triggers,
         itemOnClick = { trigger ->
             navigateToDetails(trigger)
         },
         floatingActionBtnOnClick = {
-            if (viewModel.checkNotificationsEnabled(context)) navigateToEdit()
-            else scope.launch {
-                snackbarController.showSnackbar(
-                    message = context.getString(R.string.turn_on_notifications),
-                    withDismissAction = true,
-                    duration = SnackbarDuration.Short,
-                )
-            }
-        }
+            navigateToEdit()
+        },
+        internetAvailable = networkConnection,
+        notifyAvailable = notifyAvailable
     )
+    if (latestLifecycleEvent.value == Lifecycle.Event.ON_RESUME)
+        viewModel.fetchNotifyAvailable(context)
+
     BackHandler {
         navigateUp()
     }
@@ -84,8 +100,10 @@ fun TriggersScreen(
 @Composable
 fun TriggersScreenContent(
     list: List<Trigger>,
+    notifyAvailable: Boolean,
     itemOnClick: (Trigger) -> Unit,
     floatingActionBtnOnClick: () -> Unit,
+    internetAvailable: Boolean,
 ) {
     Scaffold(
         topBar = { TriggersTopBar() },
@@ -96,23 +114,42 @@ fun TriggersScreenContent(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-        Crossfade(
-            targetState = list.isEmpty(),
-            label = "",
-            modifier = Modifier.padding(paddingValues)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            when (it) {
-                true -> EmptyContent(
+            when {
+                !notifyAvailable -> EmptyContent(
+                    text = stringResource(R.string.turn_on_notify),
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                list.isEmpty() -> EmptyContent(
                     text = stringResource(R.string.you_don_t_have_any_triggers),
                     modifier = Modifier.fillMaxSize()
                 )
 
-                false -> TriggersList(
+                else -> TriggersList(
                     list = list,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .fillMaxSize(),
                     itemOnClick = itemOnClick,
+                )
+            }
+            AnimatedVisibility(
+                visible = !internetAvailable,
+                enter = slideInVertically { 2 * it },
+                exit = slideOutVertically { 2 * it },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.feature_with_internet),
+                    modifier = Modifier
+                        .width(200.dp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    textAlign = TextAlign.Center
                 )
             }
         }

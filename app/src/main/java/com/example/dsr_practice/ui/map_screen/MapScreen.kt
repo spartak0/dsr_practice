@@ -1,7 +1,6 @@
 package com.example.dsr_practice.ui.map_screen
 
 import android.Manifest
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +13,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +51,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Destination
 @Composable
 fun MapScreen(
@@ -71,6 +70,19 @@ fun MapScreen(
     val scope = rememberCoroutineScope()
     val autocompletePlaces by viewModel.autocompletePlaces.collectAsState()
 
+    val permissions = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+        )
+    ) {
+        if (it.containsValue(false)) snackbarController.showSnackbar(
+            message = context.getString(R.string.turn_on_tracking),
+            withDismissAction = true,
+            duration = SnackbarDuration.Short,
+        )
+    }
+
     MapContent(
         searchText = text,
         searchTextChange = {
@@ -78,18 +90,9 @@ fun MapScreen(
             viewModel.fetchPlaces(it)
         },
         cameraPositionState = cameraPositionState,
-        permissionsDismiss = {
-            navigator.navigateUp()
-            scope.launch {
-                snackbarController.showSnackbar(
-                    message = context.getString(R.string.turn_on_notifications),
-                    withDismissAction = true,
-                    duration = SnackbarDuration.Short,
-                )
-            }
-        },
         currentLocationOnClick = {
-            viewModel.getDeviceLocation(context) {
+            permissions.launchMultiplePermissionRequest()
+            if (permissions.allPermissionsGranted) viewModel.getDeviceLocation(context) {
                 scope.launch {
                     cameraPositionState.animate(
                         update = CameraUpdateFactory.newLatLngZoom(
@@ -132,7 +135,6 @@ fun MapScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MapContent(
     searchText: String,
@@ -140,7 +142,6 @@ fun MapContent(
     autocompletePlaces: List<Place>,
     placeOnClick: (Place) -> Unit,
     cameraPositionState: CameraPositionState,
-    permissionsDismiss: () -> Unit,
     currentLocationOnClick: () -> Unit,
     markerState: MarkerState,
     onMapClick: (LatLng) -> Unit,
@@ -197,24 +198,4 @@ fun MapContent(
             }
         }
     }
-    MapPermissions(onDismiss = permissionsDismiss)
-}
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun MapPermissions(onDismiss: () -> Unit) {
-    val permissions = rememberMultiplePermissionsState(
-        listOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        )
-    ) {
-        if (it[Manifest.permission.ACCESS_COARSE_LOCATION] == false) {
-            onDismiss()
-        }
-    }
-    SideEffect {
-        permissions.launchMultiplePermissionRequest()
-    }
-
 }

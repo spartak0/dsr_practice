@@ -3,7 +3,7 @@
     <string name="locations">Locations</string>
     <string name="location_name">Location name</string>
     <string name="next">NEXT</string>
-    <string name="toast_turn_on_tracking">Turn on tracking\nYou can do it in settings</string>
+    <string name="turn_on_tracking">Turn on tracking\nYou can do it in settings</string>
     <string name="weather_details">Weather details</string>
     <string name="location">Location</string>
     <string name="triggers">Triggers</string>
@@ -53,4 +53,6 @@
     <string name="fill_in_one_of_the_optional_fields">Fill in one of the optional fields</string>
     <string name="choose_location">Choose location</string>
     <string name="feature_with_internet">This feature is only available with an internet connection</string>
+    <string name="map_without_internet_connection">Map and other feature not available without internet connection</string>
+    <string name="turn_on_notify">Triggers are useless without notifications\nTurn on this in settings</string>
 </resources>

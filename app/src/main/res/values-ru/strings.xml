@@ -4,7 +4,7 @@
     <string name="locations">Локации</string>
     <string name="location_name">Название локации</string>
     <string name="next">ДАЛЕЕ</string>
-    <string name="toast_turn_on_tracking">Включите отслеживание геопозиции\nВы можете сделать это в настройках</string>
+    <string name="turn_on_tracking">Включите отслеживание геопозиции\nВы можете сделать это в настройках</string>
     <string name="weather_details">Детали</string>
     <string name="location">Локация</string>
     <string name="triggers">Триггеры</string>
@@ -54,4 +54,6 @@
     <string name="fill_in_one_of_the_optional_fields">Заполните хотя бы одно опциональное поле</string>
     <string name="choose_location">Выберите локацию</string>
     <string name="feature_with_internet">Эта функция доступна только с интернет подключением</string>
+    <string name="map_without_internet_connection">Карта и другие функции не работают без подключения к интернету</string>
+    <string name="turn_on_notify">Триггеры бесполезны без уведомлений\nВключите их в настройках</string>
 </resources>

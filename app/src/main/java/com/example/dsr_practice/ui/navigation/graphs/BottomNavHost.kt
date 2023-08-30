@@ -46,7 +46,9 @@ fun BottomNavHost(
                             weather = weather
                         )
                     )
-                })
+                },
+                snackbarController = snackbarController,
+            )
         }
         composable(TriggersScreenDestination) {
             TriggersScreen(
@@ -72,7 +74,6 @@ fun BottomNavHost(
                         )
                     )
                 },
-                snackbarController = snackbarController
             )
         }
         composable(SettingsScreenDestination) {

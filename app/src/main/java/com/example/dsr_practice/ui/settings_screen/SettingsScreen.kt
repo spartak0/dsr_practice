@@ -70,7 +70,7 @@ fun SettingsScreen(
         unitsOptions = unitsOptions,
         unitsSelectedOptions = selectedUnits,
         unitsOnOptionSelected = { units ->
-            if (!viewModel.isInternetAvailable(context = context)) snackbarController.showSnackbar(
+            if (!viewModel.isInternetAvailable()) snackbarController.showSnackbar(
                 context.getString(R.string.feature_with_internet),
                 withDismissAction = true
             )

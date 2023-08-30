@@ -24,11 +24,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dsr_practice.R
 import com.example.dsr_practice.domain.model.Weather
 import com.example.dsr_practice.ui.location_screen.view_pager.LocationsViewPager
 import com.example.dsr_practice.ui.location_screen.view_pager.LocationsViewPagerTab
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
+import com.example.dsr_practice.utils.SnackbarController
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.launch
 
@@ -36,7 +38,12 @@ import kotlinx.coroutines.launch
 @Composable
 @BottomNavGraph(start = true)
 @Destination
-fun LocationScreen(navigateToMap: () -> Unit, navigateToDetails: (Weather) -> Unit) {
+fun LocationScreen(
+    navigateToMap: () -> Unit,
+    navigateToDetails: (Weather) -> Unit,
+    snackbarController: SnackbarController,
+    viewModel: LocationsScreenViewModel = hiltViewModel()
+) {
     val tabs = listOf(
         LocationsViewPagerTab.All(navigateToDetails),
         LocationsViewPagerTab.Favorite(navigateToDetails)
@@ -52,7 +59,13 @@ fun LocationScreen(navigateToMap: () -> Unit, navigateToDetails: (Weather) -> Un
                 pagerState.animateScrollToPage(tabIndex)
             }
         },
-        navigateToMap = navigateToMap,
+        navigateToMap = {
+            if (viewModel.checkInternetConnection()) navigateToMap()
+            else snackbarController.showSnackbar(
+                context.getString(R.string.map_without_internet_connection),
+                withDismissAction = true
+            )
+        },
     )
     BackHandler {
         (context as? Activity)?.finish()
