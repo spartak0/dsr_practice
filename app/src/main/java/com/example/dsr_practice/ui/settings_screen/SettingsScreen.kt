@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +45,7 @@ import com.example.dsr_practice.domain.model.settings.Units.Imperial
 import com.example.dsr_practice.domain.model.settings.Units.Metric
 import com.example.dsr_practice.ui.components.VerticalRadioButtonGroup
 import com.example.dsr_practice.ui.navigation.graphs.BottomNavGraph
+import com.example.dsr_practice.utils.SnackbarController
 import com.ramcosta.composedestinations.annotation.Destination
 
 @SuppressLint("ResourceType")
@@ -53,6 +55,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
     navigateUp: () -> Unit,
+    snackbarController: SnackbarController,
 ) {
     val unitsOptions = listOf(Metric, Imperial)
     val selectedUnits by viewModel.currentUnits.collectAsState()
@@ -61,12 +64,17 @@ fun SettingsScreen(
     val selectedTheme by viewModel.useDarkTheme.collectAsState()
     val locales = LocalConfiguration.current.locales
     val currentLanguage = locales[0].toLanguageTag()
+    val context = LocalContext.current
 
     SettingsScreenContent(
         unitsOptions = unitsOptions,
         unitsSelectedOptions = selectedUnits,
         unitsOnOptionSelected = { units ->
-            viewModel.setUnits(units)
+            if (!viewModel.isInternetAvailable(context = context)) snackbarController.showSnackbar(
+                context.getString(R.string.feature_with_internet),
+                withDismissAction = true
+            )
+            else viewModel.setUnits(units)
         },
         themeOptions = themeOptions,
         selectedTheme = selectedTheme,

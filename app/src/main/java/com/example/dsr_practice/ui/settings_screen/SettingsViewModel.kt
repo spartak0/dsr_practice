@@ -1,10 +1,12 @@
 package com.example.dsr_practice.ui.settings_screen
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dsr_practice.domain.model.settings.ThemeState
 import com.example.dsr_practice.domain.model.settings.Units
 import com.example.dsr_practice.domain.repository.UserRepository
+import com.example.dsr_practice.utils.NetworkHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,8 +15,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
-class SettingsViewModel @Inject constructor(private val userRepository: UserRepository) :
+class SettingsViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+) :
     ViewModel() {
 
     private val _currentUnits = MutableStateFlow<Units>(Units.Metric)
@@ -56,4 +61,8 @@ class SettingsViewModel @Inject constructor(private val userRepository: UserRepo
             }
         }
     }
+
+    fun isInternetAvailable(context: Context): Boolean =
+        NetworkHelper.isInternetAvailable(context)
+
 }

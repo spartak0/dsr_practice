@@ -7,7 +7,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dsr_practice.domain.model.Trigger
 import com.example.dsr_practice.ui.NavGraphs
-import com.example.dsr_practice.utils.SnackbarController
 import com.example.dsr_practice.ui.destinations.DetailsScreenDestination
 import com.example.dsr_practice.ui.destinations.EditTriggersScreenDestination
 import com.example.dsr_practice.ui.destinations.LocationScreenDestination
@@ -18,6 +17,7 @@ import com.example.dsr_practice.ui.destinations.TriggersScreenDestination
 import com.example.dsr_practice.ui.location_screen.LocationScreen
 import com.example.dsr_practice.ui.settings_screen.SettingsScreen
 import com.example.dsr_practice.ui.triggers_screen.TriggersScreen
+import com.example.dsr_practice.utils.SnackbarController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
 import com.ramcosta.composedestinations.navigation.dependency
@@ -76,13 +76,16 @@ fun BottomNavHost(
             )
         }
         composable(SettingsScreenDestination) {
-            SettingsScreen(navigateUp = {
-                navController.navigate(LocationScreenDestination) {
-                    popUpTo(LocationScreenDestination) {
-                        inclusive = false
+            SettingsScreen(
+                navigateUp = {
+                    navController.navigate(LocationScreenDestination) {
+                        popUpTo(LocationScreenDestination) {
+                            inclusive = false
+                        }
                     }
-                }
-            })
+                },
+                snackbarController = snackbarController,
+            )
         }
     }
 }

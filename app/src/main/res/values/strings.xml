@@ -52,4 +52,5 @@
     <string name="incorrect_name">Incorrect name</string>
     <string name="fill_in_one_of_the_optional_fields">Fill in one of the optional fields</string>
     <string name="choose_location">Choose location</string>
+    <string name="feature_with_internet">This feature is only available with an internet connection</string>
 </resources>
